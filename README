@@ -1,0 +1,5 @@
+libcec-daemon
+A simple daemon to connect libcec to uinput.
+by Andrew Brampton
+
+
