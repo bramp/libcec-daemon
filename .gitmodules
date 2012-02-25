@@ -1,0 +1,3 @@
+[submodule "lib/libcec"]
+	path = lib/libcec
+	url = git://github.com/Pulse-Eight/libcec.git
