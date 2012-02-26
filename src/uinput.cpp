@@ -2,6 +2,7 @@
 
 #include <cstring>
 #include <iostream>
+#include <stdexcept>
 
 #include <errno.h>
 #include <fcntl.h>
@@ -28,7 +29,6 @@ UInput::~UInput() {
 void UInput::open() {
 	this->fd = ::open(UINPUT_PATH, O_WRONLY);
 	if(this->fd < 0) {
-		cerr << "Failed to open uinput: ";
 
 		switch (errno) {
 			case ENOENT:
@@ -44,7 +44,7 @@ void UInput::open() {
 				break;
 		}
 
-		//return -1;
+		throw std::runtime_error("Failed to open uinput");
 	}
 }
 
@@ -60,8 +60,8 @@ void UInput::setup(const char *dev_name) {
 
 	ret = write(this->fd, &uidev, sizeof(uidev));
 	if (ret != sizeof(uidev)) {
+		throw std::runtime_error("Failed to setup uinput");
 		cerr << "Failed to setup uinput: " << errno << " " << strerror(errno) << endl;
-		//return -1;
 	}
 
 	// We only want to send keypresses
@@ -72,17 +72,18 @@ void UInput::setup(const char *dev_name) {
 	ret |= ioctl(this->fd, UI_SET_KEYBIT, KEY_D);
 
 	if (ret) {
-		cerr << "Failed to setup uinput: " << errno << " " << strerror(errno) << endl;
-		//return -1;
+    	throw std::runtime_error("Failed to setup uinput");
+		//cerr << "Failed to setup uinput" " << errno << " " << strerror(errno) << endl;
 	}
 }
 
 void UInput::create() {
 	int ret = ioctl(this->fd, UI_DEV_CREATE);
 	if (ret) {
-		cerr << "Failed to create uinput" << endl;
-		//return -1;
+		throw std::runtime_error("Failed to create uinput");
 	}
+
+	cerr << "Created uinput device" << endl;
 
 	// This sleep is here, because (for some reason) you need to wait before
 	// sending you first uinput event.
@@ -99,8 +100,7 @@ void UInput::send_event(__u16 type, __u16 code, __s32 value) const {
 
 	int ret = write(this->fd, &ev, sizeof(ev));
 	if (ret != sizeof(ev)) {
-		cerr << "Failed to send_event: " << errno << " " << strerror(errno) << endl;
-		//return -1;
+		throw std::runtime_error("Failed to send_event");
 	}
 }
 
@@ -110,10 +110,8 @@ void UInput::sync() const {
 
 
 void UInput::destroy() {
-	int ret = ioctl(fd, UI_DEV_DESTROY);
-	if (ret) {
-		cerr << "Failed to create uinput" << endl;
-	}
-
+	ioctl(this->fd, UI_DEV_DESTROY);
 	close(this->fd);
+
+	this->fd = -1;
 }

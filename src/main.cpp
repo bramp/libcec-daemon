@@ -14,19 +14,25 @@
 
 using namespace CEC;
 
+using std::cerr;
+using std::endl;
+
 static int uinputCecMap[CEC_USER_CONTROL_CODE_MAX + 1];
 
 class Main : Cec, UInput {
 
 	private:
 
-		static Main * main;
 		static void signalHandler(int sigNum);
 
-		bool running = true;
+		bool running;
 
 		Main();
 		virtual ~Main();
+
+		// Not implemented to avoid copying the singleton
+		Main(Main const&);
+		void operator=(Main const&);
 
 		void setupUinputMap();
 
@@ -37,26 +43,24 @@ class Main : Cec, UInput {
 
 	public:
 
-		static Main * instance();
+		static Main & instance();
 
 		void loop();
 		void stop();
 
 };
 
-Main * Main::main = NULL;
-
-Main * Main::instance() {
-	if (Main::main == NULL)
-		Main::main = new Main();
-	return Main::main;
+Main & Main::instance() {
+	static Main main;
+	return main;
 }
 
-Main::Main() : Cec("Linux PC"), UInput("libcec-daemon") {
+Main::Main() : Cec("Linux PC"), UInput("libcec-daemon"), running(true) {
+
+	std::cerr << "Main::Main()" << std::endl;
 
 	signal (SIGINT,  &Main::signalHandler);
 	signal (SIGTERM, &Main::signalHandler);
-	signal (SIGKILL, &Main::signalHandler);
 
 	setupUinputMap();
 	Cec::open();
@@ -68,6 +72,7 @@ Main::~Main() {
 
 void Main::loop() {
 	while (running) {
+		cerr << "Loop" << endl;
 		sleep(1);
 	}
 }
@@ -78,8 +83,9 @@ void Main::stop() {
 
 
 void Main::signalHandler(int sigNum) {
-	Main * main = Main::instance();
-	main->stop();
+	cerr << "SignalHanlder(" << sigNum << ")" << endl;
+
+	Main::instance().stop();
 }
 
 void Main::setupUinputMap() {
@@ -189,6 +195,7 @@ int Main::onCecKeyPress(const cec_keypress &key) {
 int Main::onCecCommand(const cec_command command) {
 	return 1;
 }
+
 int Main::onCecConfigurationChanged(const libcec_configuration & configuration) {
 	return 1;
 }
@@ -197,11 +204,11 @@ int main (int argc, char *argv[]) {
 
 	// TODO Parse the config
 
-	int daemon(int nochdir, int noclose);
+	//int daemon(int nochdir, int noclose);
 
 	// Create the main
-	Main * main = Main::instance();
-	main->loop();
+	Main & main = Main::instance();
+	main.loop();
 
 	return 0;
 }

@@ -13,6 +13,7 @@ class Cec {
 
 	private:
 
+		CEC::ICECCallbacks callbacks;
 		const std::unique_ptr<CEC::ICECAdapter> cec;
 
 		CEC::ICECAdapter * CecInit(const char * name) const;
@@ -29,6 +30,7 @@ class Cec {
 		//void listAdapters();
 
 		void open();
+		void close();
 
 	// These are just wrapper functions, to map C callbacks to C++
 	friend int cecLogMessage (void *cbParam, const CEC::cec_log_message &message);

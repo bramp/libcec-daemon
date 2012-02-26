@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <cstddef>
+#include <stdexcept>
 
 using namespace CEC;
 
@@ -29,14 +30,6 @@ int cecConfigurationChanged(void *cbParam, const libcec_configuration & configur
 	return ((Cec*)cbParam)->onCecConfigurationChanged(configuration);
 }
 
-// Cleans up after CECInit
-void cecDeleter(ICECAdapter* ptr) {
-	if (ptr)
-		CECDestroy(ptr);
-}
-
-//std::default_delete<ICECAdapter>
-
 struct ICECAdapterDeleter : std::default_delete<ICECAdapter> {
 	//ICECAdapterDeleter() = default;
 
@@ -46,8 +39,6 @@ struct ICECAdapterDeleter : std::default_delete<ICECAdapter> {
 	}
 };
 
-//class
-
 ICECAdapter * Cec::CecInit(const char * name) const {
 	cec_device_type_list deviceTypes;
 	deviceTypes.Clear(); // We have to clear before using
@@ -55,17 +46,17 @@ ICECAdapter * Cec::CecInit(const char * name) const {
 
 	// Init everything
 	void * cec = CECInit(name, deviceTypes);
-	if (cec == NULL) {
-		cerr << "Failed to init libcec" << endl;
-		//return -1;
-	}
+	if (cec == NULL)
+		throw std::runtime_error("Failed to init libcec");
 
 	return (ICECAdapter *)cec;
 }
 
 Cec::Cec(const char * name) : cec(CecInit(name), ICECAdapterDeleter()) {
 
-	ICECCallbacks callbacks;
+	cerr << "Cec::Cec" << endl;
+
+	memset(&callbacks, 0, sizeof(callbacks));
 	callbacks.CBCecLogMessage = &::cecLogMessage;
 	callbacks.CBCecKeyPress   = &::cecKeyPress;
 	callbacks.CBCecCommand    = &::cecCommand;
@@ -78,23 +69,27 @@ Cec::~Cec() {}
 
 void Cec::open() {
 
+	cerr << "Cec::open()" << endl;
+
 	// Search for adapters
     cec_adapter devices[10];
     uint8_t ret = cec->FindAdapters(devices, 10, NULL);
     if (ret < 0) {
-    	cerr << "Error occurred searching for adapters" << endl;
-    	//return -1;
+    	throw std::runtime_error("Error occurred searching for adapters");
     }
 
     if (ret == 0) {
-    	cerr << "No adapters found" << endl;
-    	//return -1;
+    	throw std::runtime_error("No adapters found");
     }
 
     // Just use the first found
-    if (! cec->Open(devices[0].comm) ) {
-    	cerr << "Failed to open adapter " << devices[0].path << endl;
-    	//return -1;
+    if ( !cec->Open(devices[0].comm) ) {
+    	throw std::runtime_error("Failed to open adapter");
     }
+
+    cerr << "Opened " << devices[0].path << endl;
 }
 
+void Cec::close() {
+	cec->Close();
+}
