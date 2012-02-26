@@ -1,9 +1,8 @@
 CC=clang
-#CFLAGS=-c -Wall -I/usr/include/libcec
-CFLAGS=-c -Wall -Ilib/libcec/include
+CFLAGS=-c -std=c++0x -Wall -Ilib/libcec/include
 LDFLAGS=-lcec -ldl
 EXECUTABLE=libcec-daemon
-SOURCES=src/main.cpp
+SOURCES=src/main.cpp src/uinput.cpp src/libcec.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
 
 all: $(SOURCES) $(EXECUTABLE)
