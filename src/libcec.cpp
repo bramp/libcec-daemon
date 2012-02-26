@@ -48,13 +48,13 @@ struct ICECAdapterDeleter : std::default_delete<ICECAdapter> {
 
 //class
 
-ICECAdapter * Cec::CecInit() const {
+ICECAdapter * Cec::CecInit(const char * name) const {
 	cec_device_type_list deviceTypes;
 	deviceTypes.Clear(); // We have to clear before using
 	deviceTypes.Add(CEC_DEVICE_TYPE_PLAYBACK_DEVICE);
 
 	// Init everything
-	void * cec = CECInit("test", deviceTypes);
+	void * cec = CECInit(name, deviceTypes);
 	if (cec == NULL) {
 		cerr << "Failed to init libcec" << endl;
 		//return -1;
@@ -63,7 +63,7 @@ ICECAdapter * Cec::CecInit() const {
 	return (ICECAdapter *)cec;
 }
 
-Cec::Cec() : cec(CecInit(), ICECAdapterDeleter()) {
+Cec::Cec(const char * name) : cec(CecInit(name), ICECAdapterDeleter()) {
 
 	ICECCallbacks callbacks;
 	callbacks.CBCecLogMessage = &::cecLogMessage;

@@ -10,14 +10,24 @@
 #include <iostream>
 #include <stdint.h>
 #include <cstddef>
+#include <csignal>
 
 using namespace CEC;
 
-int uinputCecMap[CEC_USER_CONTROL_CODE_MAX + 1];
+static int uinputCecMap[CEC_USER_CONTROL_CODE_MAX + 1];
 
 class Main : Cec, UInput {
 
 	private:
+
+		static Main * main;
+		static void signalHandler(int sigNum);
+
+		bool running = true;
+
+		Main();
+		virtual ~Main();
+
 		void setupUinputMap();
 
 		int onCecLogMessage(const cec_log_message &message);
@@ -26,13 +36,50 @@ class Main : Cec, UInput {
 		int onCecConfigurationChanged(const libcec_configuration & configuration);
 
 	public:
-		Main();
+
+		static Main * instance();
+
+		void loop();
+		void stop();
 
 };
 
-Main::Main() : Cec(), UInput("libcec-daemon") {
+Main * Main::main = NULL;
+
+Main * Main::instance() {
+	if (Main::main == NULL)
+		Main::main = new Main();
+	return Main::main;
+}
+
+Main::Main() : Cec("Linux PC"), UInput("libcec-daemon") {
+
+	signal (SIGINT,  &Main::signalHandler);
+	signal (SIGTERM, &Main::signalHandler);
+	signal (SIGKILL, &Main::signalHandler);
+
 	setupUinputMap();
 	Cec::open();
+}
+
+Main::~Main() {
+	stop();
+}
+
+void Main::loop() {
+	while (running) {
+		sleep(1);
+	}
+}
+
+void Main::stop() {
+	running = false;
+}
+
+
+void Main::signalHandler(int sigNum) {
+	Main * main = Main::instance();
+	main->stop();
 }
 
 void Main::setupUinputMap() {
@@ -146,13 +193,15 @@ int Main::onCecConfigurationChanged(const libcec_configuration & configuration) 
 	return 1;
 }
 
-
 int main (int argc, char *argv[]) {
 
 	// TODO Parse the config
 
+	int daemon(int nochdir, int noclose);
+
 	// Create the main
-	Main main;
+	Main * main = Main::instance();
+	main->loop();
 
 	return 0;
 }

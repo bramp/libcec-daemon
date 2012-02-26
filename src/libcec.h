@@ -15,15 +15,16 @@ class Cec {
 
 		const std::unique_ptr<CEC::ICECAdapter> cec;
 
-		CEC::ICECAdapter * CecInit() const;
+		CEC::ICECAdapter * CecInit(const char * name) const;
 
+		// Virtual methods to handle callbacks
 		virtual int onCecLogMessage(const CEC::cec_log_message &message) = 0;
 		virtual int onCecKeyPress  (const CEC::cec_keypress &key) = 0;
 		virtual int onCecCommand   (const CEC::cec_command command) = 0;
 		virtual int onCecConfigurationChanged(const CEC::libcec_configuration & configuration) = 0;
 
 	public:
-		Cec();
+		Cec(const char *name);
 		virtual ~Cec();
 		//void listAdapters();
 
