@@ -14,9 +14,12 @@ class Cec {
 	private:
 
 		CEC::ICECCallbacks callbacks;
+		CEC::libcec_configuration config;
+
 		const std::unique_ptr<CEC::ICECAdapter> cec;
 
-		CEC::ICECAdapter * CecInit(const char * name) const;
+		// Inits the CECAdapter and returns it
+		CEC::ICECAdapter * CecInit(const char * name);
 
 		// Virtual methods to handle callbacks
 		virtual int onCecLogMessage(const CEC::cec_log_message &message) = 0;
@@ -27,7 +30,11 @@ class Cec {
 	public:
 		Cec(const char *name);
 		virtual ~Cec();
-		//void listAdapters();
+
+		/**
+		 * List all found adapters and prints them out
+		 */
+		void listAdapters();
 
 		void open();
 		void close();

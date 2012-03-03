@@ -35,34 +35,28 @@ struct ICECAdapterDeleter : std::default_delete<ICECAdapter> {
 
 	void operator()(ICECAdapter* ptr) const {
 		if (ptr)
-			CECDestroy(ptr);
+			UnloadLibCec(ptr);
 	}
 };
 
-ICECAdapter * Cec::CecInit(const char * name) const {
-	cec_device_type_list deviceTypes;
-	deviceTypes.Clear(); // We have to clear before using
-	deviceTypes.Add(CEC_DEVICE_TYPE_PLAYBACK_DEVICE);
+ICECAdapter * Cec::CecInit(const char * name) {
+	config.Clear();
 
-	// Init everything
-	void * cec = CECInit(name, deviceTypes);
-	if (cec == NULL)
-		throw std::runtime_error("Failed to init libcec");
+	config.deviceTypes.Add(CEC_DEVICE_TYPE_PLAYBACK_DEVICE);
+	strncpy(config.strDeviceName, name, sizeof(config.strDeviceName));
 
-	return (ICECAdapter *)cec;
+	callbacks.CBCecLogMessage           = &::cecLogMessage;
+	callbacks.CBCecKeyPress             = &::cecKeyPress;
+	callbacks.CBCecCommand              = &::cecCommand;
+	callbacks.CBCecConfigurationChanged = &::cecConfigurationChanged;
+	config.callbackParam                = this;
+	config.callbacks                    = &callbacks;
+
+	return (ICECAdapter *)LibCecInitialise(&config);
 }
 
 Cec::Cec(const char * name) : cec(CecInit(name), ICECAdapterDeleter()) {
 
-	cerr << "Cec::Cec" << endl;
-
-	memset(&callbacks, 0, sizeof(callbacks));
-	callbacks.CBCecLogMessage = &::cecLogMessage;
-	callbacks.CBCecKeyPress   = &::cecKeyPress;
-	callbacks.CBCecCommand    = &::cecCommand;
-	callbacks.CBCecConfigurationChanged = &::cecConfigurationChanged;
-
-	cec->EnableCallbacks(this, &callbacks);
 }
 
 Cec::~Cec() {}
@@ -92,4 +86,25 @@ void Cec::open() {
 
 void Cec::close() {
 	cec->Close();
+}
+
+/**
+ * Prints the name of all found adapters
+ */
+void Cec::listAdapters() {
+	cec_adapter devices[10];
+	int8_t ret = cec->FindAdapters(devices, 10, NULL);
+	if (ret < 0) {
+		cout << "Error occurred searching for adapters" << endl;
+		return;
+	}
+
+	if (ret == 0) {
+		cout << "No adapters found" << endl;
+	}
+
+	for (int8_t i = 0; i < ret; i++) {
+		cout << "[" << (int)i << "] port:" << devices[i].comm << " path:" << devices[i].path << endl;
+	}
+
 }

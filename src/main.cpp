@@ -19,11 +19,9 @@ using std::endl;
 
 static int uinputCecMap[CEC_USER_CONTROL_CODE_MAX + 1];
 
-class Main : Cec, UInput {
+class Main : public Cec, UInput {
 
 	private:
-
-		static void signalHandler(int sigNum);
 
 		bool running;
 
@@ -33,6 +31,8 @@ class Main : Cec, UInput {
 		// Not implemented to avoid copying the singleton
 		Main(Main const&);
 		void operator=(Main const&);
+
+		static void signalHandler(int sigNum);
 
 		void setupUinputMap();
 
@@ -44,6 +44,8 @@ class Main : Cec, UInput {
 	public:
 
 		static Main & instance();
+
+		void listDevices();
 
 		void loop();
 		void stop();
@@ -63,7 +65,6 @@ Main::Main() : Cec("Linux PC"), UInput("libcec-daemon"), running(true) {
 	signal (SIGTERM, &Main::signalHandler);
 
 	setupUinputMap();
-	Cec::open();
 }
 
 Main::~Main() {
@@ -208,7 +209,11 @@ int main (int argc, char *argv[]) {
 
 	// Create the main
 	Main & main = Main::instance();
-	main.loop();
+
+	//main.open();
+	//main.loop();
+
+	main.listAdapters();
 
 	return 0;
 }
