@@ -34,7 +34,7 @@ class Cec {
 		/**
 		 * List all found adapters and prints them out
 		 */
-		void listAdapters();
+		void listDevices();
 
 		void open();
 		void close();

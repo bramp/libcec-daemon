@@ -45,8 +45,6 @@ class Main : public Cec, UInput {
 
 		static Main & instance();
 
-		void listDevices();
-
 		void loop();
 		void stop();
 
@@ -213,7 +211,7 @@ int main (int argc, char *argv[]) {
 	//main.open();
 	//main.loop();
 
-	main.listAdapters();
+	main.listDevices();
 
 	return 0;
 }

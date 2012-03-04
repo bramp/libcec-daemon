@@ -9,10 +9,10 @@ using namespace CEC;
 using std::cout;
 using std::cerr;
 using std::endl;
+using std::hex;
 
 // cecloader has to be after some #includes and using namespaces :(
 #include <cecloader.h>
-
 
 int cecLogMessage(void *cbParam, const cec_log_message &message) {
 	return ((Cec*)cbParam)->onCecLogMessage(message);
@@ -66,22 +66,22 @@ void Cec::open() {
 	cerr << "Cec::open()" << endl;
 
 	// Search for adapters
-    cec_adapter devices[10];
-    uint8_t ret = cec->FindAdapters(devices, 10, NULL);
-    if (ret < 0) {
-    	throw std::runtime_error("Error occurred searching for adapters");
-    }
+	cec_adapter devices[10];
+	uint8_t ret = cec->FindAdapters(devices, 10, NULL);
+	if (ret < 0) {
+		throw std::runtime_error("Error occurred searching for adapters");
+	}
 
-    if (ret == 0) {
-    	throw std::runtime_error("No adapters found");
-    }
+	if (ret == 0) {
+		throw std::runtime_error("No adapters found");
+	}
 
-    // Just use the first found
-    if ( !cec->Open(devices[0].comm) ) {
-    	throw std::runtime_error("Failed to open adapter");
-    }
+	// Just use the first found
+	if (!cec->Open(devices[0].comm)) {
+		throw std::runtime_error("Failed to open adapter");
+	}
 
-    cerr << "Opened " << devices[0].path << endl;
+	cerr << "Opened " << devices[0].path << endl;
 }
 
 void Cec::close() {
@@ -90,8 +90,9 @@ void Cec::close() {
 
 /**
  * Prints the name of all found adapters
+ * This will close any open device!
  */
-void Cec::listAdapters() {
+void Cec::listDevices() {
 	cec_adapter devices[10];
 	int8_t ret = cec->FindAdapters(devices, 10, NULL);
 	if (ret < 0) {
@@ -104,7 +105,28 @@ void Cec::listAdapters() {
 	}
 
 	for (int8_t i = 0; i < ret; i++) {
-		cout << "[" << (int)i << "] port:" << devices[i].comm << " path:" << devices[i].path << endl;
-	}
+		cout << "[" << (int) i << "] port:" << devices[i].comm << " path:" << devices[i].path << endl;
 
+		if (!cec->Open(devices[i].comm)) {
+			cout << "\tFailed to open" << endl;
+		}
+
+		cec_logical_addresses devices = cec->GetActiveDevices();
+		for (int j = 0; j < 16; j++) {
+			if (devices[j]) {
+				cec_logical_address logical_addres = (cec_logical_address) j;
+
+				uint16_t physical_address = cec->GetDevicePhysicalAddress(
+						logical_addres);
+				cec_osd_name name = cec->GetDeviceOSDName(logical_addres);
+				cec_vendor_id vendor = (cec_vendor_id) cec->GetDeviceVendorId(
+						logical_addres);
+
+				cout << cec->ToString(logical_addres)
+				     << "@0x" << hex << physical_address
+				     << " " << name.name << " (" << cec->ToString(vendor) << ")"
+				     << endl;
+			}
+		}
+	}
 }
