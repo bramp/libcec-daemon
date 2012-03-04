@@ -8,16 +8,14 @@
 #include <fcntl.h>
 #include <linux/uinput.h>
 
-
-// TODO loop all uinputs
-#define UINPUT_PATH "/dev/uinput"
-const char *uinput_filename[] = {"/dev/uinput", "/dev/input/uinput", "/dev/misc/uinput"};
+static const char *uinput_filename[] = {"/dev/uinput", "/dev/input/uinput", "/dev/misc/uinput"};
 
 using std::cerr;
 using std::endl;
 
 UInput::UInput(const char *dev_name) : fd(-1) {
-	open();
+
+	openAll();
 	setup(dev_name);
 	create();
 }
@@ -26,26 +24,44 @@ UInput::~UInput() {
 	destroy();
 }
 
-void UInput::open() {
-	this->fd = ::open(UINPUT_PATH, O_WRONLY);
+int UInput::open(const char *uinput_path) {
+	this->fd = ::open(uinput_path, O_WRONLY);
 	if(this->fd < 0) {
+		return errno;
+	}
+	return 0;
+}
 
-		switch (errno) {
-			case ENOENT:
-				cerr << "uinput was not found. Is the uinput module loaded?" << endl;
-				break;
+/**
+ * Try each uinput until one works
+ */
+void UInput::openAll() {
+	int ret = ENOENT;
+	for (int i = 0; i < 3; i++) {
+		ret = open(uinput_filename[i]);
 
-			case EACCES:
-				cerr << "Permission denied. Check you have permission to uinput." << endl;
-				break;
+		// If all things worked, then bail
+		if (ret == 0)
+			break;
 
-			default:
-				cerr << errno << " " << strerror(errno) << endl;
-				break;
+		// If the device isn't found, try the next one
+		if (ret == ENOENT)
+			continue;
+
+		if (ret == EACCES) {
+			cerr << "Permission denied. Check you have permission to uinput." << endl;
+		} else {
+			cerr << errno << " " << strerror(errno) << endl;
 		}
 
 		throw std::runtime_error("Failed to open uinput");
 	}
+
+	if (ret != 0) {
+		cerr << "uinput was not found. Is the uinput module loaded?" << endl;
+		throw std::runtime_error("Failed to open uinput");
+	}
+
 }
 
 void UInput::setup(const char *dev_name) {

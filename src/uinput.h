@@ -4,7 +4,8 @@ class UInput {
 private:
 	int fd; // Handle for uinput file ops
 
-	void open();
+	int open(const char *uinput_path);
+	void openAll();
 	void setup(const char *dev_name);
 	void create();
 
