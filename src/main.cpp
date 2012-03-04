@@ -19,9 +19,12 @@ using std::endl;
 
 static int uinputCecMap[CEC_USER_CONTROL_CODE_MAX + 1];
 
-class Main : public Cec, UInput {
+class Main : public CecCallback {
 
 	private:
+
+		Cec cec;
+		UInput uinput;
 
 		bool running;
 
@@ -48,6 +51,8 @@ class Main : public Cec, UInput {
 		void loop();
 		void stop();
 
+		void listDevices();
+
 };
 
 Main & Main::instance() {
@@ -55,7 +60,7 @@ Main & Main::instance() {
 	return main;
 }
 
-Main::Main() : Cec("Linux PC"), UInput("libcec-daemon"), running(true) {
+Main::Main() : cec("Linux PC", this), uinput("libcec-daemon"), running(true) {
 
 	std::cerr << "Main::Main()" << std::endl;
 
@@ -80,6 +85,9 @@ void Main::stop() {
 	running = false;
 }
 
+void Main::listDevices() {
+	cec.listDevices();
+}
 
 void Main::signalHandler(int sigNum) {
 	cerr << "SignalHanlder(" << sigNum << ")" << endl;
@@ -184,7 +192,7 @@ int Main::onCecKeyPress(const cec_keypress &key) {
 		uinputKey = uinputCecMap[key.keycode];
 
 	if (uinputKey != 0) {
-		send_event(EV_KEY, uinputKey, 1);
+		uinput.send_event(EV_KEY, uinputKey, 1);
 		sync();
 	}
 

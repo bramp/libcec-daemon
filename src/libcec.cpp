@@ -3,6 +3,7 @@
 #include <iostream>
 #include <cstddef>
 #include <stdexcept>
+#include <cassert>
 
 using namespace CEC;
 
@@ -15,19 +16,19 @@ using std::hex;
 #include <cecloader.h>
 
 int cecLogMessage(void *cbParam, const cec_log_message &message) {
-	return ((Cec*)cbParam)->onCecLogMessage(message);
+	return ((CecCallback*) cbParam)->onCecLogMessage(message);
 }
 
 int cecKeyPress(void *cbParam, const cec_keypress &key) {
-	return ((Cec*)cbParam)->onCecKeyPress(key);
+	return ((CecCallback*) cbParam)->onCecKeyPress(key);
 }
 
 int cecCommand(void *cbParam, const cec_command &command) {
-	return ((Cec*)cbParam)->onCecCommand(command);
+	return ((CecCallback*) cbParam)->onCecCommand(command);
 }
 
 int cecConfigurationChanged(void *cbParam, const libcec_configuration & configuration) {
-	return ((Cec*)cbParam)->onCecConfigurationChanged(configuration);
+	return ((CecCallback*) cbParam)->onCecConfigurationChanged(configuration);
 }
 
 struct ICECAdapterDeleter : std::default_delete<ICECAdapter> {
@@ -39,7 +40,10 @@ struct ICECAdapterDeleter : std::default_delete<ICECAdapter> {
 	}
 };
 
-ICECAdapter * Cec::CecInit(const char * name) {
+ICECAdapter * Cec::CecInit(const char * name, CecCallback * callback) {
+	assert(name != NULL);
+	assert(callback != NULL);
+
 	config.Clear();
 
 	config.deviceTypes.Add(CEC_DEVICE_TYPE_PLAYBACK_DEVICE);
@@ -49,17 +53,20 @@ ICECAdapter * Cec::CecInit(const char * name) {
 	callbacks.CBCecKeyPress             = &::cecKeyPress;
 	callbacks.CBCecCommand              = &::cecCommand;
 	callbacks.CBCecConfigurationChanged = &::cecConfigurationChanged;
-	config.callbackParam                = this;
+	config.callbackParam                = callback;
 	config.callbacks                    = &callbacks;
 
 	return (ICECAdapter *)LibCecInitialise(&config);
 }
 
-Cec::Cec(const char * name) : cec(CecInit(name), ICECAdapterDeleter()) {
+Cec::Cec(const char * name, CecCallback * callback) :
+	cec(CecInit(name, callback), ICECAdapterDeleter())
+{
 
 }
 
 Cec::~Cec() {}
+
 
 void Cec::open() {
 
