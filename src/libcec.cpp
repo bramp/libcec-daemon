@@ -116,15 +116,13 @@ void Cec::listDevices() {
 			if (devices[j]) {
 				cec_logical_address logical_addres = (cec_logical_address) j;
 
-				uint16_t physical_address = cec->GetDevicePhysicalAddress(
-						logical_addres);
+				uint16_t physical_address = cec->GetDevicePhysicalAddress(logical_addres);
 				cec_osd_name name = cec->GetDeviceOSDName(logical_addres);
-				cec_vendor_id vendor = (cec_vendor_id) cec->GetDeviceVendorId(
-						logical_addres);
+				cec_vendor_id vendor = (cec_vendor_id) cec->GetDeviceVendorId(logical_addres);
 
-				cout << cec->ToString(logical_addres)
+				cout << "\t"  << cec->ToString(logical_addres)
 				     << "@0x" << hex << physical_address
-				     << " " << name.name << " (" << cec->ToString(vendor) << ")"
+				     << " "   << name.name << " (" << cec->ToString(vendor) << ")"
 				     << endl;
 			}
 		}
