@@ -1,28 +1,25 @@
 #include <cec.h>
 
 #include <memory>
+#include <map>
 //#include <boost/shared_ptr.hpp>
-
-// These are just wrapper functions, to map C callbacks to C++
-static int cecLogMessage(void *cbParam, const CEC::cec_log_message &message);
-static int cecKeyPress  (void *cbParam, const CEC::cec_keypress &key);
-static int cecCommand   (void *cbParam, const CEC::cec_command &command);
-static int cecConfigurationChanged(void *cbParam, const CEC::libcec_configuration & configuration);
 
 class CecCallback {
 	public:
 		virtual ~CecCallback() {}
 
 		// Virtual methods to handle callbacks
-		virtual int onCecLogMessage(const CEC::cec_log_message &message) = 0;
-		virtual int onCecKeyPress  (const CEC::cec_keypress &key) = 0;
-		virtual int onCecCommand   (const CEC::cec_command command) = 0;
+		virtual int onCecLogMessage(const CEC::cec_log_message & message) = 0;
+		virtual int onCecKeyPress  (const CEC::cec_keypress & key) = 0;
+		virtual int onCecCommand   (const CEC::cec_command & command) = 0;
 		virtual int onCecConfigurationChanged(const CEC::libcec_configuration & configuration) = 0;
 };
 
 class Cec {
 
 	private:
+
+		static std::map<CEC::cec_user_control_code, const char *> & setupUserControlCodeName();
 
 		// Members for the libcec interface
 		CEC::ICECCallbacks callbacks;
@@ -34,6 +31,9 @@ class Cec {
 		CEC::ICECAdapter * CecInit(const char * name, CecCallback *callback);
 
 	public:
+
+		const static std::map<CEC::cec_user_control_code, const char *> cecUserControlCodeName;
+
 		Cec(const char *name, CecCallback *callback);
 		virtual ~Cec();
 
@@ -42,7 +42,14 @@ class Cec {
 		 */
 		void listDevices();
 
+		/**
+		 * Opens the first adapter it finds
+		 */
 		void open();
+
+		/**
+		 * Closes the open adapter
+		 */
 		void close();
 
 	// These are just wrapper functions, to map C callbacks to C++
@@ -51,3 +58,10 @@ class Cec {
 	friend int cecCommand    (void *cbParam, const CEC::cec_command &command);
 	friend int cecConfigurationChanged (void *cbParam, const CEC::libcec_configuration & configuration);
 };
+
+
+// Some helper << methods
+std::ostream& operator<<(std::ostream &out, const CEC::cec_log_message & message);
+std::ostream& operator<<(std::ostream &out, const CEC::cec_keypress & key);
+std::ostream& operator<<(std::ostream &out, const CEC::cec_command & command);
+std::ostream& operator<<(std::ostream &out, const CEC::libcec_configuration & configuration);

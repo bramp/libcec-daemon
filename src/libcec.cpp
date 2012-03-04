@@ -1,9 +1,26 @@
+/**
+ * libcec.cpp
+ * By Andrew Brampton
+ *
+ * Notes:
+ *   Turn off:
+ *     SetInactiveView() // We don't want to be in control anymore
+ *     StandbyDevices()  // We now turn off all devices
+ *
+ *   Turn on:
+ *     PowerOnDevices()  // Turn on all devices
+ *     SetActiveSource(m_configuration.deviceTypes[0]) // Enable us as Active source
+ *
+ *     SetOSDString(CECDEVICE_TV, CEC_DISPLAY_CONTROL_DISPLAY_FOR_DEFAULT_TIME, g_localizeStrings.Get(36016).c_str());
+ *
+ */
 #include "libcec.h"
 
 #include <iostream>
 #include <cstddef>
 #include <stdexcept>
 #include <cassert>
+#include <map>
 
 using namespace CEC;
 
@@ -11,32 +28,36 @@ using std::cout;
 using std::cerr;
 using std::endl;
 using std::hex;
+using std::map;
 
 // cecloader has to be after some #includes and using namespaces :(
 #include <cecloader.h>
 
-static int cecLogMessage(void *cbParam, const cec_log_message &message) {
+// Map of control codes to Strings
+const map<enum cec_user_control_code, const char *> Cec::cecUserControlCodeName = Cec::setupUserControlCodeName();
+
+int cecLogMessage(void *cbParam, const cec_log_message &message) {
 	try {
 		return ((CecCallback*) cbParam)->onCecLogMessage(message);
 	} catch (...) {}
 	return 0;
 }
 
-static int cecKeyPress(void *cbParam, const cec_keypress &key) {
+int cecKeyPress(void *cbParam, const cec_keypress &key) {
 	try {
 		return ((CecCallback*) cbParam)->onCecKeyPress(key);
 	} catch (...) {}
 	return 0;
 }
 
-static int cecCommand(void *cbParam, const cec_command &command) {
+int cecCommand(void *cbParam, const cec_command &command) {
 	try {
 		return ((CecCallback*) cbParam)->onCecCommand(command);
 	} catch (...) {}
 	return 0;
 }
 
-static int cecConfigurationChanged(void *cbParam, const libcec_configuration & configuration) {
+int cecConfigurationChanged(void *cbParam, const libcec_configuration & configuration) {
 	try {
 		return ((CecCallback*) cbParam)->onCecConfigurationChanged(configuration);
 	} catch (...) {}
@@ -101,9 +122,15 @@ void Cec::open() {
 	}
 
 	cerr << "Opened " << devices[0].path << endl;
+
+	// and made active
+	if (!cec->SetActiveSource(config.deviceTypes[0])) {
+		throw std::runtime_error("Failed to become active");
+	}
 }
 
 void Cec::close() {
+	cec->SetInactiveView();
 	cec->Close();
 }
 
@@ -147,3 +174,137 @@ void Cec::listDevices() {
 		}
 	}
 }
+
+std::ostream& operator<<(std::ostream &out, const cec_log_level & log) {
+	if (log & CEC_LOG_ERROR)
+		out << "E";
+	if (log & CEC_LOG_WARNING)
+		out << "W";
+	if (log & CEC_LOG_NOTICE)
+		out << "N";
+	if (log & CEC_LOG_TRAFFIC)
+		out << "T";
+	if (log & CEC_LOG_DEBUG)
+		out << "D";
+	return out;
+}
+
+map<cec_user_control_code, const char *> & Cec::setupUserControlCodeName() {
+	static map<cec_user_control_code, const char *> cecUserControlCodeName;
+
+	if (cecUserControlCodeName.empty()) {
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_SELECT]="SELECT";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_UP]="UP";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_DOWN]="DOWN";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_LEFT]="LEFT";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_RIGHT]="RIGHT";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_RIGHT_UP]="RIGHT_UP";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_RIGHT_DOWN]="RIGHT_DOWN";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_LEFT_UP]="LEFT_UP";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_LEFT_DOWN]="LEFT_DOWN";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_ROOT_MENU]="ROOT_MENU";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_SETUP_MENU]="SETUP_MENU";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_CONTENTS_MENU]="CONTENTS_MENU";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_FAVORITE_MENU]="FAVORITE_MENU";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_EXIT]="EXIT";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_NUMBER0]="NUMBER0";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_NUMBER1]="NUMBER1";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_NUMBER2]="NUMBER2";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_NUMBER3]="NUMBER3";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_NUMBER4]="NUMBER4";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_NUMBER5]="NUMBER5";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_NUMBER6]="NUMBER6";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_NUMBER7]="NUMBER7";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_NUMBER8]="NUMBER8";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_NUMBER9]="NUMBER9";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_DOT]="DOT";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_ENTER]="ENTER";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_CLEAR]="CLEAR";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_NEXT_FAVORITE]="NEXT_FAVORITE";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_CHANNEL_UP]="CHANNEL_UP";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_CHANNEL_DOWN]="CHANNEL_DOWN";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_PREVIOUS_CHANNEL]="PREVIOUS_CHANNEL";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_SOUND_SELECT]="SOUND_SELECT";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_INPUT_SELECT]="INPUT_SELECT";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_DISPLAY_INFORMATION]="DISPLAY_INFORMATION";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_HELP]="HELP";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_PAGE_UP]="PAGE_UP";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_PAGE_DOWN]="PAGE_DOWN";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_POWER]="POWER";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_VOLUME_UP]="VOLUME_UP";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_VOLUME_DOWN]="VOLUME_DOWN";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_MUTE]="MUTE";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_PLAY]="PLAY";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_STOP]="STOP";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_PAUSE]="PAUSE";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_RECORD]="RECORD";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_REWIND]="REWIND";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_FAST_FORWARD]="FAST_FORWARD";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_EJECT]="EJECT";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_FORWARD]="FORWARD";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_BACKWARD]="BACKWARD";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_STOP_RECORD]="STOP_RECORD";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_PAUSE_RECORD]="PAUSE_RECORD";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_ANGLE]="ANGLE";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_SUB_PICTURE]="SUB_PICTURE";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_VIDEO_ON_DEMAND]="VIDEO_ON_DEMAND";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_ELECTRONIC_PROGRAM_GUIDE]="ELECTRONIC_PROGRAM_GUIDE";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_TIMER_PROGRAMMING]="TIMER_PROGRAMMING";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_INITIAL_CONFIGURATION]="INITIAL_CONFIGURATION";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_PLAY_FUNCTION]="PLAY_FUNCTION";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_PAUSE_PLAY_FUNCTION]="PAUSE_PLAY_FUNCTION";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_RECORD_FUNCTION]="RECORD_FUNCTION";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_PAUSE_RECORD_FUNCTION]="PAUSE_RECORD_FUNCTION";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_STOP_FUNCTION]="STOP_FUNCTION";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_MUTE_FUNCTION]="MUTE_FUNCTION";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_RESTORE_VOLUME_FUNCTION]="RESTORE_VOLUME_FUNCTION";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_TUNE_FUNCTION]="TUNE_FUNCTION";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_SELECT_MEDIA_FUNCTION]="SELECT_MEDIA_FUNCTION";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_SELECT_AV_INPUT_FUNCTION]="SELECT_AV_INPUT_FUNCTION";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_SELECT_AUDIO_INPUT_FUNCTION]="SELECT_AUDIO_INPUT_FUNCTION";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_POWER_TOGGLE_FUNCTION]="POWER_TOGGLE_FUNCTION";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_POWER_OFF_FUNCTION]="POWER_OFF_FUNCTION";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_POWER_ON_FUNCTION]="POWER_ON_FUNCTION";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_F1_BLUE]="F1_BLUE";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_F2_RED]="F2_RED";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_F3_GREEN]="F3_GREEN";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_F4_YELLOW]="F4_YELLOW";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_F5]="F5";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_DATA]="DATA";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_AN_RETURN]="AN_RETURN";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_UNKNOWN]="UNKNOWN";
+	}
+
+	return cecUserControlCodeName;
+}
+
+std::ostream& operator<<(std::ostream &out, const cec_user_control_code code) {
+	map<cec_user_control_code, const char *>::const_iterator it;
+
+	it = Cec::cecUserControlCodeName.find(code);
+	if (it == Cec::cecUserControlCodeName.end()) {
+		it = Cec::cecUserControlCodeName.find(CEC_USER_CONTROL_CODE_UNKNOWN);
+		assert(it != Cec::cecUserControlCodeName.end());
+	}
+
+	return out << it->second;
+}
+
+
+std::ostream& operator<<(std::ostream &out, const cec_log_message & message) {
+	return out << message.time << " [" << message.level << "]" << message.message << endl;
+}
+
+std::ostream& operator<<(std::ostream &out, const cec_keypress & key) {
+  return out << "Key press: " << key.keycode << " for " << key.duration << "ms";
+}
+
+/*
+std::ostream& operator<<(std::ostream &out, const cec_command & command) {
+  return out << "";
+}
+
+std::ostream& operator<<(std::ostream &out, const libcec_configuration & configuration) {
+  return out << "";
+}
+*/

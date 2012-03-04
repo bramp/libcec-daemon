@@ -2,6 +2,9 @@
  * libcec-daemon
  * A simple daemon to connect libcec to uinput.
  * by Andrew Brampton
+ *
+ * TODO
+ *
  */
 #include "uinput.h"
 #include "libcec.h"
@@ -11,13 +14,13 @@
 #include <stdint.h>
 #include <cstddef>
 #include <csignal>
+#include <vector>
 
 using namespace CEC;
 
 using std::cerr;
 using std::endl;
-
-static int uinputCecMap[CEC_USER_CONTROL_CODE_MAX + 1];
+using std::vector;
 
 class Main : public CecCallback {
 
@@ -26,7 +29,7 @@ class Main : public CecCallback {
 		Cec cec;
 		UInput uinput;
 
-		bool running;
+		bool running; // TODO Change this to be threadsafe!. Voiatile or better
 
 		Main();
 		virtual ~Main();
@@ -37,14 +40,16 @@ class Main : public CecCallback {
 
 		static void signalHandler(int sigNum);
 
-		void setupUinputMap();
+		static const std::vector<__u16> & setupUinputMap();
+
+	public:
+
+		static const std::vector<__u16> uinputCecMap;
 
 		int onCecLogMessage(const cec_log_message &message);
 		int onCecKeyPress(const cec_keypress &key);
-		int onCecCommand(const cec_command command);
+		int onCecCommand(const cec_command &command);
 		int onCecConfigurationChanged(const libcec_configuration & configuration);
-
-	public:
 
 		static Main & instance();
 
@@ -55,19 +60,19 @@ class Main : public CecCallback {
 
 };
 
+const vector<__u16> Main::uinputCecMap = Main::setupUinputMap();
+
 Main & Main::instance() {
 	static Main main;
 	return main;
 }
 
-Main::Main() : cec("Linux PC", this), uinput("libcec-daemon"), running(true) {
+Main::Main() : cec("Linux PC", this), uinput("libcec-daemon", uinputCecMap), running(true) {
 
 	std::cerr << "Main::Main()" << std::endl;
 
 	signal (SIGINT,  &Main::signalHandler);
 	signal (SIGTERM, &Main::signalHandler);
-
-	setupUinputMap();
 }
 
 Main::~Main() {
@@ -75,10 +80,12 @@ Main::~Main() {
 }
 
 void Main::loop() {
+	cec.open();
 	while (running) {
 		cerr << "Loop" << endl;
 		sleep(1);
 	}
+	cec.close();
 }
 
 void Main::stop() {
@@ -95,96 +102,105 @@ void Main::signalHandler(int sigNum) {
 	Main::instance().stop();
 }
 
-void Main::setupUinputMap() {
-	memset(uinputCecMap, 0, sizeof(uinputCecMap));
+const std::vector<__u16> & Main::setupUinputMap() {
+	static std::vector<__u16> uinputCecMap;
 
-	uinputCecMap[CEC_USER_CONTROL_CODE_SELECT                      ] = KEY_ENTER;
-	uinputCecMap[CEC_USER_CONTROL_CODE_UP                          ] = KEY_UP;
-	uinputCecMap[CEC_USER_CONTROL_CODE_DOWN                        ] = KEY_DOWN;
-	uinputCecMap[CEC_USER_CONTROL_CODE_LEFT                        ] = KEY_LEFT;
-	uinputCecMap[CEC_USER_CONTROL_CODE_RIGHT                       ] = KEY_RIGHT;
-	uinputCecMap[CEC_USER_CONTROL_CODE_RIGHT_UP                    ] = 0;
-	uinputCecMap[CEC_USER_CONTROL_CODE_RIGHT_DOWN                  ] = 0;
-	uinputCecMap[CEC_USER_CONTROL_CODE_LEFT_UP                     ] = 0;
-	uinputCecMap[CEC_USER_CONTROL_CODE_LEFT_DOWN                   ] = 0;
-	uinputCecMap[CEC_USER_CONTROL_CODE_ROOT_MENU                   ] = 0;
-	uinputCecMap[CEC_USER_CONTROL_CODE_SETUP_MENU                  ] = 0;
-	uinputCecMap[CEC_USER_CONTROL_CODE_CONTENTS_MENU               ] = 0;
-	uinputCecMap[CEC_USER_CONTROL_CODE_FAVORITE_MENU               ] = 0;
-	uinputCecMap[CEC_USER_CONTROL_CODE_EXIT                        ] = 0;
-	uinputCecMap[CEC_USER_CONTROL_CODE_NUMBER0                     ] = KEY_0;
-	uinputCecMap[CEC_USER_CONTROL_CODE_NUMBER1                     ] = KEY_1;
-	uinputCecMap[CEC_USER_CONTROL_CODE_NUMBER2                     ] = KEY_2;
-	uinputCecMap[CEC_USER_CONTROL_CODE_NUMBER3                     ] = KEY_3;
-	uinputCecMap[CEC_USER_CONTROL_CODE_NUMBER4                     ] = KEY_4;
-	uinputCecMap[CEC_USER_CONTROL_CODE_NUMBER5                     ] = KEY_5;
-	uinputCecMap[CEC_USER_CONTROL_CODE_NUMBER6                     ] = KEY_6;
-	uinputCecMap[CEC_USER_CONTROL_CODE_NUMBER7                     ] = KEY_7;
-	uinputCecMap[CEC_USER_CONTROL_CODE_NUMBER8                     ] = KEY_8;
-	uinputCecMap[CEC_USER_CONTROL_CODE_NUMBER9                     ] = KEY_9;
-	uinputCecMap[CEC_USER_CONTROL_CODE_DOT                         ] = 0;
-	uinputCecMap[CEC_USER_CONTROL_CODE_ENTER                       ] = KEY_ENTER;
-	uinputCecMap[CEC_USER_CONTROL_CODE_CLEAR                       ] = 0;
-	uinputCecMap[CEC_USER_CONTROL_CODE_NEXT_FAVORITE               ] = 0;
-	uinputCecMap[CEC_USER_CONTROL_CODE_CHANNEL_UP                  ] = KEY_CHANNELUP;
-	uinputCecMap[CEC_USER_CONTROL_CODE_CHANNEL_DOWN                ] = KEY_CHANNELDOWN;
-	uinputCecMap[CEC_USER_CONTROL_CODE_PREVIOUS_CHANNEL            ] = 0;
-	uinputCecMap[CEC_USER_CONTROL_CODE_SOUND_SELECT                ] = 0;
-	uinputCecMap[CEC_USER_CONTROL_CODE_INPUT_SELECT                ] = 0;
-	uinputCecMap[CEC_USER_CONTROL_CODE_DISPLAY_INFORMATION         ] = 0;
-	uinputCecMap[CEC_USER_CONTROL_CODE_HELP                        ] = KEY_HELP;
-	uinputCecMap[CEC_USER_CONTROL_CODE_PAGE_UP                     ] = KEY_PAGEUP;
-	uinputCecMap[CEC_USER_CONTROL_CODE_PAGE_DOWN                   ] = KEY_PAGEDOWN;
-	uinputCecMap[CEC_USER_CONTROL_CODE_POWER                       ] = 0;
-	uinputCecMap[CEC_USER_CONTROL_CODE_VOLUME_UP                   ] = KEY_VOLUMEUP;
-	uinputCecMap[CEC_USER_CONTROL_CODE_VOLUME_DOWN                 ] = KEY_VOLUMEDOWN;
-	uinputCecMap[CEC_USER_CONTROL_CODE_MUTE                        ] = KEY_MUTE;
-	uinputCecMap[CEC_USER_CONTROL_CODE_PLAY                        ] = KEY_PLAY;
-	uinputCecMap[CEC_USER_CONTROL_CODE_STOP                        ] = KEY_STOP;
-	uinputCecMap[CEC_USER_CONTROL_CODE_PAUSE                       ] = KEY_PAUSE;
-	uinputCecMap[CEC_USER_CONTROL_CODE_RECORD                      ] = KEY_RECORD;
-	uinputCecMap[CEC_USER_CONTROL_CODE_REWIND                      ] = KEY_REWIND;
-	uinputCecMap[CEC_USER_CONTROL_CODE_FAST_FORWARD                ] = 0;
-	uinputCecMap[CEC_USER_CONTROL_CODE_EJECT                       ] = 0;
-	uinputCecMap[CEC_USER_CONTROL_CODE_FORWARD                     ] = 0;
-	uinputCecMap[CEC_USER_CONTROL_CODE_BACKWARD                    ] = 0;
-	uinputCecMap[CEC_USER_CONTROL_CODE_STOP_RECORD                 ] = 0;
-	uinputCecMap[CEC_USER_CONTROL_CODE_PAUSE_RECORD                ] = 0;
-	uinputCecMap[CEC_USER_CONTROL_CODE_ANGLE                       ] = 0;
-	uinputCecMap[CEC_USER_CONTROL_CODE_SUB_PICTURE                 ] = 0;
-	uinputCecMap[CEC_USER_CONTROL_CODE_VIDEO_ON_DEMAND             ] = 0;
-	uinputCecMap[CEC_USER_CONTROL_CODE_ELECTRONIC_PROGRAM_GUIDE    ] = 0;
-	uinputCecMap[CEC_USER_CONTROL_CODE_TIMER_PROGRAMMING           ] = 0;
-	uinputCecMap[CEC_USER_CONTROL_CODE_INITIAL_CONFIGURATION       ] = 0;
-	uinputCecMap[CEC_USER_CONTROL_CODE_PLAY_FUNCTION               ] = 0;
-	uinputCecMap[CEC_USER_CONTROL_CODE_PAUSE_PLAY_FUNCTION         ] = 0;
-	uinputCecMap[CEC_USER_CONTROL_CODE_RECORD_FUNCTION             ] = 0;
-	uinputCecMap[CEC_USER_CONTROL_CODE_PAUSE_RECORD_FUNCTION       ] = 0;
-	uinputCecMap[CEC_USER_CONTROL_CODE_STOP_FUNCTION               ] = 0;
-	uinputCecMap[CEC_USER_CONTROL_CODE_MUTE_FUNCTION               ] = 0;
-	uinputCecMap[CEC_USER_CONTROL_CODE_RESTORE_VOLUME_FUNCTION     ] = 0;
-	uinputCecMap[CEC_USER_CONTROL_CODE_TUNE_FUNCTION               ] = 0;
-	uinputCecMap[CEC_USER_CONTROL_CODE_SELECT_MEDIA_FUNCTION       ] = 0;
-	uinputCecMap[CEC_USER_CONTROL_CODE_SELECT_AV_INPUT_FUNCTION    ] = 0;
-	uinputCecMap[CEC_USER_CONTROL_CODE_SELECT_AUDIO_INPUT_FUNCTION ] = 0;
-	uinputCecMap[CEC_USER_CONTROL_CODE_POWER_TOGGLE_FUNCTION       ] = 0;
-	uinputCecMap[CEC_USER_CONTROL_CODE_POWER_OFF_FUNCTION          ] = 0;
-	uinputCecMap[CEC_USER_CONTROL_CODE_POWER_ON_FUNCTION           ] = 0;
-	uinputCecMap[CEC_USER_CONTROL_CODE_F1_BLUE                     ] = KEY_BLUE;
-	uinputCecMap[CEC_USER_CONTROL_CODE_F2_RED                      ] = KEY_RED;
-	uinputCecMap[CEC_USER_CONTROL_CODE_F3_GREEN                    ] = KEY_GREEN;
-	uinputCecMap[CEC_USER_CONTROL_CODE_F4_YELLOW                   ] = KEY_YELLOW;
-	uinputCecMap[CEC_USER_CONTROL_CODE_F5                          ] = 0;
-	uinputCecMap[CEC_USER_CONTROL_CODE_DATA                        ] = 0;
-	uinputCecMap[CEC_USER_CONTROL_CODE_AN_RETURN                   ] = 0;
-	uinputCecMap[CEC_USER_CONTROL_CODE_MAX                         ] = 0;
+	if (uinputCecMap.empty()) {
+		uinputCecMap.resize(CEC_USER_CONTROL_CODE_MAX, KEY_RESERVED);
+		uinputCecMap[CEC_USER_CONTROL_CODE_SELECT                      ] = KEY_ENTER;
+		uinputCecMap[CEC_USER_CONTROL_CODE_UP                          ] = KEY_UP;
+		uinputCecMap[CEC_USER_CONTROL_CODE_DOWN                        ] = KEY_DOWN;
+		uinputCecMap[CEC_USER_CONTROL_CODE_LEFT                        ] = KEY_LEFT;
+		uinputCecMap[CEC_USER_CONTROL_CODE_RIGHT                       ] = KEY_RIGHT;
+		uinputCecMap[CEC_USER_CONTROL_CODE_RIGHT_UP                    ] = 0;
+		uinputCecMap[CEC_USER_CONTROL_CODE_RIGHT_DOWN                  ] = 0;
+		uinputCecMap[CEC_USER_CONTROL_CODE_LEFT_UP                     ] = 0;
+		uinputCecMap[CEC_USER_CONTROL_CODE_LEFT_DOWN                   ] = 0;
+		uinputCecMap[CEC_USER_CONTROL_CODE_ROOT_MENU                   ] = 0;
+		uinputCecMap[CEC_USER_CONTROL_CODE_SETUP_MENU                  ] = KEY_SETUP;
+		uinputCecMap[CEC_USER_CONTROL_CODE_CONTENTS_MENU               ] = KEY_MENU;
+		uinputCecMap[CEC_USER_CONTROL_CODE_FAVORITE_MENU               ] = KEY_FAVORITES;
+		uinputCecMap[CEC_USER_CONTROL_CODE_EXIT                        ] = KEY_BACKSPACE;
+		uinputCecMap[CEC_USER_CONTROL_CODE_NUMBER0                     ] = KEY_0;
+		uinputCecMap[CEC_USER_CONTROL_CODE_NUMBER1                     ] = KEY_1;
+		uinputCecMap[CEC_USER_CONTROL_CODE_NUMBER2                     ] = KEY_2;
+		uinputCecMap[CEC_USER_CONTROL_CODE_NUMBER3                     ] = KEY_3;
+		uinputCecMap[CEC_USER_CONTROL_CODE_NUMBER4                     ] = KEY_4;
+		uinputCecMap[CEC_USER_CONTROL_CODE_NUMBER5                     ] = KEY_5;
+		uinputCecMap[CEC_USER_CONTROL_CODE_NUMBER6                     ] = KEY_6;
+		uinputCecMap[CEC_USER_CONTROL_CODE_NUMBER7                     ] = KEY_7;
+		uinputCecMap[CEC_USER_CONTROL_CODE_NUMBER8                     ] = KEY_8;
+		uinputCecMap[CEC_USER_CONTROL_CODE_NUMBER9                     ] = KEY_9;
+		uinputCecMap[CEC_USER_CONTROL_CODE_DOT                         ] = 0;
+		uinputCecMap[CEC_USER_CONTROL_CODE_ENTER                       ] = KEY_ENTER;
+		uinputCecMap[CEC_USER_CONTROL_CODE_CLEAR                       ] = 0;
+		uinputCecMap[CEC_USER_CONTROL_CODE_NEXT_FAVORITE               ] = 0;
+		uinputCecMap[CEC_USER_CONTROL_CODE_CHANNEL_UP                  ] = KEY_CHANNELUP;
+		uinputCecMap[CEC_USER_CONTROL_CODE_CHANNEL_DOWN                ] = KEY_CHANNELDOWN;
+		uinputCecMap[CEC_USER_CONTROL_CODE_PREVIOUS_CHANNEL            ] = 0;
+		uinputCecMap[CEC_USER_CONTROL_CODE_SOUND_SELECT                ] = 0;
+		uinputCecMap[CEC_USER_CONTROL_CODE_INPUT_SELECT                ] = 0;
+		uinputCecMap[CEC_USER_CONTROL_CODE_DISPLAY_INFORMATION         ] = 0;
+		uinputCecMap[CEC_USER_CONTROL_CODE_HELP                        ] = KEY_HELP;
+		uinputCecMap[CEC_USER_CONTROL_CODE_PAGE_UP                     ] = KEY_PAGEUP;
+		uinputCecMap[CEC_USER_CONTROL_CODE_PAGE_DOWN                   ] = KEY_PAGEDOWN;
+		uinputCecMap[CEC_USER_CONTROL_CODE_POWER                       ] = KEY_POWER;
+		uinputCecMap[CEC_USER_CONTROL_CODE_VOLUME_UP                   ] = KEY_VOLUMEUP;
+		uinputCecMap[CEC_USER_CONTROL_CODE_VOLUME_DOWN                 ] = KEY_VOLUMEDOWN;
+		uinputCecMap[CEC_USER_CONTROL_CODE_MUTE                        ] = KEY_MUTE;
+		uinputCecMap[CEC_USER_CONTROL_CODE_PLAY                        ] = KEY_PLAY;
+		uinputCecMap[CEC_USER_CONTROL_CODE_STOP                        ] = KEY_STOP;
+		uinputCecMap[CEC_USER_CONTROL_CODE_PAUSE                       ] = KEY_PAUSE;
+		uinputCecMap[CEC_USER_CONTROL_CODE_RECORD                      ] = KEY_RECORD;
+		uinputCecMap[CEC_USER_CONTROL_CODE_REWIND                      ] = KEY_REWIND;
+		uinputCecMap[CEC_USER_CONTROL_CODE_FAST_FORWARD                ] = KEY_FASTFORWARD;
+		uinputCecMap[CEC_USER_CONTROL_CODE_EJECT                       ] = KEY_EJECTCD;
+		uinputCecMap[CEC_USER_CONTROL_CODE_FORWARD                     ] = KEY_NEXTSONG;
+		uinputCecMap[CEC_USER_CONTROL_CODE_BACKWARD                    ] = KEY_PREVSONG;
+		uinputCecMap[CEC_USER_CONTROL_CODE_STOP_RECORD                 ] = 0;
+		uinputCecMap[CEC_USER_CONTROL_CODE_PAUSE_RECORD                ] = 0;
+		uinputCecMap[CEC_USER_CONTROL_CODE_ANGLE                       ] = 0;
+		uinputCecMap[CEC_USER_CONTROL_CODE_SUB_PICTURE                 ] = 0;
+		uinputCecMap[CEC_USER_CONTROL_CODE_VIDEO_ON_DEMAND             ] = 0;
+		uinputCecMap[CEC_USER_CONTROL_CODE_ELECTRONIC_PROGRAM_GUIDE    ] = 0;
+		uinputCecMap[CEC_USER_CONTROL_CODE_TIMER_PROGRAMMING           ] = 0;
+		uinputCecMap[CEC_USER_CONTROL_CODE_INITIAL_CONFIGURATION       ] = 0;
+		uinputCecMap[CEC_USER_CONTROL_CODE_PLAY_FUNCTION               ] = 0;
+		uinputCecMap[CEC_USER_CONTROL_CODE_PAUSE_PLAY_FUNCTION         ] = 0;
+		uinputCecMap[CEC_USER_CONTROL_CODE_RECORD_FUNCTION             ] = 0;
+		uinputCecMap[CEC_USER_CONTROL_CODE_PAUSE_RECORD_FUNCTION       ] = 0;
+		uinputCecMap[CEC_USER_CONTROL_CODE_STOP_FUNCTION               ] = 0;
+		uinputCecMap[CEC_USER_CONTROL_CODE_MUTE_FUNCTION               ] = 0;
+		uinputCecMap[CEC_USER_CONTROL_CODE_RESTORE_VOLUME_FUNCTION     ] = 0;
+		uinputCecMap[CEC_USER_CONTROL_CODE_TUNE_FUNCTION               ] = 0;
+		uinputCecMap[CEC_USER_CONTROL_CODE_SELECT_MEDIA_FUNCTION       ] = 0;
+		uinputCecMap[CEC_USER_CONTROL_CODE_SELECT_AV_INPUT_FUNCTION    ] = 0;
+		uinputCecMap[CEC_USER_CONTROL_CODE_SELECT_AUDIO_INPUT_FUNCTION ] = 0;
+		uinputCecMap[CEC_USER_CONTROL_CODE_POWER_TOGGLE_FUNCTION       ] = 0;
+		uinputCecMap[CEC_USER_CONTROL_CODE_POWER_OFF_FUNCTION          ] = 0;
+		uinputCecMap[CEC_USER_CONTROL_CODE_POWER_ON_FUNCTION           ] = 0;
+		uinputCecMap[CEC_USER_CONTROL_CODE_F1_BLUE                     ] = KEY_BLUE;
+		uinputCecMap[CEC_USER_CONTROL_CODE_F2_RED                      ] = KEY_RED;
+		uinputCecMap[CEC_USER_CONTROL_CODE_F3_GREEN                    ] = KEY_GREEN;
+		uinputCecMap[CEC_USER_CONTROL_CODE_F4_YELLOW                   ] = KEY_YELLOW;
+		uinputCecMap[CEC_USER_CONTROL_CODE_F5                          ] = 0;
+		uinputCecMap[CEC_USER_CONTROL_CODE_DATA                        ] = 0;
+		uinputCecMap[CEC_USER_CONTROL_CODE_AN_RETURN                   ] = 0;
+		uinputCecMap[CEC_USER_CONTROL_CODE_MAX                         ] = 0;
+	}
+
+	return uinputCecMap;
 }
 
 int Main::onCecLogMessage(const cec_log_message &message) {
+	cerr << message;
+
 	return 1;
 }
 
 int Main::onCecKeyPress(const cec_keypress &key) {
+	cerr << key;
+
 	int uinputKey = 0;
 
 	// Check bounds and find uinput code for this cec keypress
@@ -192,18 +208,24 @@ int Main::onCecKeyPress(const cec_keypress &key) {
 		uinputKey = uinputCecMap[key.keycode];
 
 	if (uinputKey != 0) {
-		uinput.send_event(EV_KEY, uinputKey, 1);
-		sync();
+		cerr << " sent " << uinputKey;
+
+		uinput.send_event(EV_KEY, uinputKey, key.duration == 0 ? 1 : 0);
+		uinput.sync();
 	}
 
+	cerr << endl;
 	return 1;
 }
 
-int Main::onCecCommand(const cec_command command) {
+int Main::onCecCommand(const cec_command & command) {
+	//cerr << command;
 	return 1;
 }
+
 
 int Main::onCecConfigurationChanged(const libcec_configuration & configuration) {
+	//cerr << configuration;
 	return 1;
 }
 
@@ -215,11 +237,18 @@ int main (int argc, char *argv[]) {
 
 	// Create the main
 	Main & main = Main::instance();
+	main.loop();
 
-	//main.open();
-	//main.loop();
+	/*
+	cec_keypress test = {CEC_USER_CONTROL_CODE_NUMBER0, 1};
+	main.onCecKeyPress(test);
+	main.onCecKeyPress(test);
+	main.onCecKeyPress(test);
+	main.onCecKeyPress(test);
+	main.onCecKeyPress(test);
+	*/
 
-	main.listDevices();
+	//main.listDevices();
 
 	return 0;
 }
