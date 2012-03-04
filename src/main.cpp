@@ -156,7 +156,7 @@ const std::vector<__u16> & Main::setupUinputMap() {
 		uinputCecMap[CEC_USER_CONTROL_CODE_FAST_FORWARD                ] = KEY_FASTFORWARD;
 		uinputCecMap[CEC_USER_CONTROL_CODE_EJECT                       ] = KEY_EJECTCD;
 		uinputCecMap[CEC_USER_CONTROL_CODE_FORWARD                     ] = KEY_NEXTSONG;
-		uinputCecMap[CEC_USER_CONTROL_CODE_BACKWARD                    ] = KEY_PREVSONG;
+		uinputCecMap[CEC_USER_CONTROL_CODE_BACKWARD                    ] = KEY_PREVIOUSSONG;
 		uinputCecMap[CEC_USER_CONTROL_CODE_STOP_RECORD                 ] = 0;
 		uinputCecMap[CEC_USER_CONTROL_CODE_PAUSE_RECORD                ] = 0;
 		uinputCecMap[CEC_USER_CONTROL_CODE_ANGLE                       ] = 0;
