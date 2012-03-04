@@ -11,4 +11,5 @@
 *.la
 *.a
 
-
+# Final compiled app
+libcec-daemon
