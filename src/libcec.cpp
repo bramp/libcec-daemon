@@ -15,20 +15,32 @@ using std::hex;
 // cecloader has to be after some #includes and using namespaces :(
 #include <cecloader.h>
 
-int cecLogMessage(void *cbParam, const cec_log_message &message) {
-	return ((CecCallback*) cbParam)->onCecLogMessage(message);
+static int cecLogMessage(void *cbParam, const cec_log_message &message) {
+	try {
+		return ((CecCallback*) cbParam)->onCecLogMessage(message);
+	} catch (...) {}
+	return 0;
 }
 
-int cecKeyPress(void *cbParam, const cec_keypress &key) {
-	return ((CecCallback*) cbParam)->onCecKeyPress(key);
+static int cecKeyPress(void *cbParam, const cec_keypress &key) {
+	try {
+		return ((CecCallback*) cbParam)->onCecKeyPress(key);
+	} catch (...) {}
+	return 0;
 }
 
-int cecCommand(void *cbParam, const cec_command &command) {
-	return ((CecCallback*) cbParam)->onCecCommand(command);
+static int cecCommand(void *cbParam, const cec_command &command) {
+	try {
+		return ((CecCallback*) cbParam)->onCecCommand(command);
+	} catch (...) {}
+	return 0;
 }
 
-int cecConfigurationChanged(void *cbParam, const libcec_configuration & configuration) {
-	return ((CecCallback*) cbParam)->onCecConfigurationChanged(configuration);
+static int cecConfigurationChanged(void *cbParam, const libcec_configuration & configuration) {
+	try {
+		return ((CecCallback*) cbParam)->onCecConfigurationChanged(configuration);
+	} catch (...) {}
+	return 0;
 }
 
 struct ICECAdapterDeleter : std::default_delete<ICECAdapter> {

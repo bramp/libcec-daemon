@@ -4,10 +4,10 @@
 //#include <boost/shared_ptr.hpp>
 
 // These are just wrapper functions, to map C callbacks to C++
-int cecLogMessage(void *cbParam, const CEC::cec_log_message &message);
-int cecKeyPress  (void *cbParam, const CEC::cec_keypress &key);
-int cecCommand   (void *cbParam, const CEC::cec_command &command);
-int cecConfigurationChanged(void *cbParam, const CEC::libcec_configuration & configuration);
+static int cecLogMessage(void *cbParam, const CEC::cec_log_message &message);
+static int cecKeyPress  (void *cbParam, const CEC::cec_keypress &key);
+static int cecCommand   (void *cbParam, const CEC::cec_command &command);
+static int cecConfigurationChanged(void *cbParam, const CEC::libcec_configuration & configuration);
 
 class CecCallback {
 	public:
