@@ -13,10 +13,9 @@ static const char *uinput_filename[] = {"/dev/uinput", "/dev/input/uinput", "/de
 using std::cerr;
 using std::endl;
 
-UInput::UInput(const char *dev_name) : fd(-1) {
-
+UInput::UInput(const char *dev_name, std::vector<__u16> keys) : fd(-1) {
 	openAll();
-	setup(dev_name);
+	setup(dev_name, keys);
 	create();
 }
 
@@ -41,8 +40,10 @@ void UInput::openAll() {
 		ret = open(uinput_filename[i]);
 
 		// If all things worked, then bail
-		if (ret == 0)
+		if (ret == 0) {
+			cerr << "\tOpened " << uinput_filename[i] << endl;
 			break;
+		}
 
 		// If the device isn't found, try the next one
 		if (ret == ENOENT)
@@ -61,10 +62,9 @@ void UInput::openAll() {
 		cerr << "uinput was not found. Is the uinput module loaded?" << endl;
 		throw std::runtime_error("Failed to open uinput");
 	}
-
 }
 
-void UInput::setup(const char *dev_name) {
+void UInput::setup(const char *dev_name, std::vector<__u16> keys) {
 
 	int ret;
 	struct uinput_user_dev uidev;
@@ -72,20 +72,24 @@ void UInput::setup(const char *dev_name) {
 
 	strncpy(uidev.name, dev_name, UINPUT_MAX_NAME_SIZE);
 	uidev.id.bustype = BUS_USB;
+	uidev.id.vendor  = 1;
+	uidev.id.product = 1;
 	uidev.id.version = 1;
 
 	ret = write(this->fd, &uidev, sizeof(uidev));
 	if (ret != sizeof(uidev)) {
 		throw std::runtime_error("Failed to setup uinput");
-		cerr << "Failed to setup uinput: " << errno << " " << strerror(errno) << endl;
+		//cerr << "Failed to setup uinput: " << errno << " " << strerror(errno) << endl;
 	}
 
 	// We only want to send keypresses
-	ret = ioctl(this->fd, UI_SET_EVBIT, EV_KEY);
-	ret |= ioctl(this->fd, UI_SET_KEYBIT, KEY_MUTE);
-	ret |= ioctl(this->fd, UI_SET_KEYBIT, KEY_VOLUMEDOWN);
-	ret |= ioctl(this->fd, UI_SET_KEYBIT, KEY_VOLUMEUP);
-	ret |= ioctl(this->fd, UI_SET_KEYBIT, KEY_D);
+	ret  = ioctl(this->fd, UI_SET_EVBIT, EV_KEY);
+
+	// Add all the keys we might use
+	for (std::vector<__u16>::const_iterator i = keys.begin(); i != keys.end(); i++) {
+		if (*i != KEY_RESERVED)
+			ret |= ioctl(this->fd, UI_SET_KEYBIT, *i);
+	}
 
 	if (ret) {
     	throw std::runtime_error("Failed to setup uinput");
