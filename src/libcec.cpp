@@ -95,13 +95,17 @@ ICECAdapter * Cec::CecInit(const char * name, CecCallback * callback) {
 Cec::Cec(const char * name, CecCallback * callback) :
 	cec(CecInit(name, callback), ICECAdapterDeleter())
 {
-
+	if (cec == NULL) {
+		throw std::runtime_error("Failed to initialise libCEC");
+	}
 }
 
 Cec::~Cec() {}
 
 
 void Cec::open() {
+
+	assert(cec != NULL);
 
 	cerr << "Cec::open()" << endl;
 
