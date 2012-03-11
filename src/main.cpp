@@ -16,8 +16,14 @@
 #include <csignal>
 #include <vector>
 
+#include <boost/program_options.hpp>
+
+#define VERSION "libcec-daemon v0.9"
+
 using namespace CEC;
 
+using std::string;
+using std::cout;
 using std::cerr;
 using std::endl;
 using std::vector;
@@ -230,24 +236,58 @@ int Main::onCecConfigurationChanged(const libcec_configuration & configuration) 
 
 int main (int argc, char *argv[]) {
 
-	// TODO Parse the config
+	namespace po = boost::program_options;
 
-	//int daemon(int nochdir, int noclose);
+	po::options_description desc("Allowed options");
+	desc.add_options()
+	    ("help,h",    "show help message")
+	    ("version,v", "show version (and exit)")
+	    ("daemon,d",  "daemon mode, run in background")
+	    ("list,l",    "list available CEC adapters")
+	    ("usb", po::value<std::string>(), "USB adapter path (as shown by --list)")
+	;
 
-	// Create the main
-	Main & main = Main::instance();
-	main.loop();
+	po::positional_options_description p;
+	p.add("usb", 1);
 
-	/*
-	cec_keypress test = {CEC_USER_CONTROL_CODE_NUMBER0, 1};
-	main.onCecKeyPress(test);
-	main.onCecKeyPress(test);
-	main.onCecKeyPress(test);
-	main.onCecKeyPress(test);
-	main.onCecKeyPress(test);
-	*/
+	po::variables_map vm;
+	po::store(po::command_line_parser(argc, argv).options(desc).positional(p).run(), vm);
+	po::notify(vm);
 
-	//main.listDevices();
+	if (vm.count("help")) {
+		cout << "Usage: " << argv[0] << " [-h] [-v] [-d] [usb]" << endl << endl;
+	    cout << desc << endl;
+	    return 0;
+	}
+
+	if (vm.count("version")) {
+		cout << VERSION << endl;
+		return 0;
+	}
+
+	try {
+		// Create the main
+		Main & main = Main::instance();
+
+		if (vm.count("list")) {
+			main.listDevices();
+			return 0;
+		}
+
+		if (vm.count("usb")) {
+			cout << vm["usb"].as< string >() << endl;
+		}
+
+		if (vm.count("daemon")) {
+			daemon(0, 0);
+		}
+
+		main.loop();
+
+	} catch (std::exception & e) {
+		cerr << e.what() << endl;
+		return -1;
+	}
 
 	return 0;
 }
