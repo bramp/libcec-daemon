@@ -106,7 +106,7 @@ const std::vector<__u16> & Main::setupUinputMap() {
 	static std::vector<__u16> uinputCecMap;
 
 	if (uinputCecMap.empty()) {
-		uinputCecMap.resize(CEC_USER_CONTROL_CODE_MAX, KEY_RESERVED);
+		uinputCecMap.resize(CEC_USER_CONTROL_CODE_MAX + 1, 0);
 		uinputCecMap[CEC_USER_CONTROL_CODE_SELECT                      ] = KEY_ENTER;
 		uinputCecMap[CEC_USER_CONTROL_CODE_UP                          ] = KEY_UP;
 		uinputCecMap[CEC_USER_CONTROL_CODE_DOWN                        ] = KEY_DOWN;
@@ -186,7 +186,6 @@ const std::vector<__u16> & Main::setupUinputMap() {
 		uinputCecMap[CEC_USER_CONTROL_CODE_F5                          ] = 0;
 		uinputCecMap[CEC_USER_CONTROL_CODE_DATA                        ] = 0;
 		uinputCecMap[CEC_USER_CONTROL_CODE_AN_RETURN                   ] = 0;
-		uinputCecMap[CEC_USER_CONTROL_CODE_MAX                         ] = 0;
 	}
 
 	return uinputCecMap;
