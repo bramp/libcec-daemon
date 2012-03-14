@@ -9,6 +9,7 @@
 #include "uinput.h"
 #include "libcec.h"
 
+#include <algorithm>
 #include <cstdio>
 #include <iostream>
 #include <stdint.h>
@@ -16,16 +17,18 @@
 #include <csignal>
 #include <vector>
 
+
 #include <boost/program_options.hpp>
 
 #define VERSION "libcec-daemon v0.9"
 
 using namespace CEC;
 
-using std::string;
 using std::cout;
 using std::cerr;
 using std::endl;
+using std::max;
+using std::string;
 using std::vector;
 
 class Main : public CecCallback {
@@ -241,9 +244,10 @@ int main (int argc, char *argv[]) {
 	po::options_description desc("Allowed options");
 	desc.add_options()
 	    ("help,h",    "show help message")
-	    ("version,v", "show version (and exit)")
+	    ("version,V", "show version (and exit)")
 	    ("daemon,d",  "daemon mode, run in background")
-	    ("list,l",    "list available CEC adapters")
+	    ("list,l",    "list available CEC adapters and devices")
+	    ("verbose,v", "verbose output (use twice for more)")
 	    ("usb", po::value<std::string>(), "USB adapter path (as shown by --list)")
 	;
 
@@ -264,6 +268,8 @@ int main (int argc, char *argv[]) {
 		cout << VERSION << endl;
 		return 0;
 	}
+
+	int loglevel = max((size_t)vm.count("verbose"), (size_t)2);
 
 	try {
 		// Create the main
