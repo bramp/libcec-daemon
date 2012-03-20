@@ -8,10 +8,15 @@
  */
 #include "main.h"
 
+#define VERSION     "libcec-daemon v0.9"
+
+#define CEC_NAME    "linux PC"
+#define UINPUT_NAME "libcec-daemon"
+
 #include <algorithm>
 #include <cstdio>
 #include <iostream>
-#include <stdint.h>
+#include <cstdint>
 #include <cstddef>
 #include <csignal>
 #include <vector>
@@ -219,6 +224,7 @@ int main (int argc, char *argv[]) {
 	    ("daemon,d",  "daemon mode, run in background")
 	    ("list,l",    "list available CEC adapters and devices")
 	    ("verbose,v", "verbose output (use twice for more)")
+	    //("quiet,q",   "quiet output (print nothing)")
 	    ("usb", po::value<std::string>(), "USB adapter path (as shown by --list)")
 	;
 

@@ -305,15 +305,13 @@ std::ostream& operator<<(std::ostream &out, const cec_log_message & message) {
 }
 
 std::ostream& operator<<(std::ostream &out, const cec_keypress & key) {
-  return out << "Key press: " << key.keycode << " for " << key.duration << "ms";
+	return out << "Key press: " << key.keycode << " for " << key.duration << "ms";
 }
 
-/*
 std::ostream& operator<<(std::ostream &out, const cec_command & command) {
-  return out << "";
+	throw std::runtime_error("operator<<(std::ostream &out, const cec_command & command)");
 }
 
 std::ostream& operator<<(std::ostream &out, const libcec_configuration & configuration) {
-  return out << "";
+	throw std::runtime_error("operator<<(std::ostream &out, const libcec_configuration & configuration)");
 }
-*/

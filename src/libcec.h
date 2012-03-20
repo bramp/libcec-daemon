@@ -1,8 +1,8 @@
+#include <cstddef>
 #include <cec.h>
 
 #include <memory>
 #include <map>
-//#include <boost/shared_ptr.hpp>
 
 class CecCallback {
 	public:
