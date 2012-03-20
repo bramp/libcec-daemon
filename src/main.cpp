@@ -6,8 +6,7 @@
  * TODO
  *
  */
-#include "uinput.h"
-#include "libcec.h"
+#include "main.h"
 
 #include <algorithm>
 #include <cstdio>
@@ -16,7 +15,6 @@
 #include <cstddef>
 #include <csignal>
 #include <vector>
-
 
 #include <boost/program_options.hpp>
 
@@ -30,44 +28,6 @@ using std::endl;
 using std::max;
 using std::string;
 using std::vector;
-
-class Main : public CecCallback {
-
-	private:
-
-		Cec cec;
-		UInput uinput;
-
-		bool running; // TODO Change this to be threadsafe!. Voiatile or better
-
-		Main();
-		virtual ~Main();
-
-		// Not implemented to avoid copying the singleton
-		Main(Main const&);
-		void operator=(Main const&);
-
-		static void signalHandler(int sigNum);
-
-		static const std::vector<__u16> & setupUinputMap();
-
-	public:
-
-		static const std::vector<__u16> uinputCecMap;
-
-		int onCecLogMessage(const cec_log_message &message);
-		int onCecKeyPress(const cec_keypress &key);
-		int onCecCommand(const cec_command &command);
-		int onCecConfigurationChanged(const libcec_configuration & configuration);
-
-		static Main & instance();
-
-		void loop();
-		void stop();
-
-		void listDevices();
-
-};
 
 const vector<__u16> Main::uinputCecMap = Main::setupUinputMap();
 
