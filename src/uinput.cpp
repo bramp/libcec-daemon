@@ -1,7 +1,6 @@
 #include "uinput.h"
 
 #include <cstring>
-#include <iostream>
 #include <stdexcept>
 
 #include <errno.h>
@@ -9,10 +8,13 @@
 #include <linux/uinput.h>
 #include <unistd.h>
 
+#include <log4cplus/logger.h>
+
+using namespace log4cplus;
+
 static const char *uinput_filename[] = {"/dev/uinput", "/dev/input/uinput", "/dev/misc/uinput"};
 
-using std::cerr;
-using std::endl;
+static Logger logger = Logger::getInstance("uinput");
 
 UInput::UInput(const char *dev_name, std::vector<__u16> keys) : fd(-1) {
 	openAll();
@@ -42,7 +44,7 @@ void UInput::openAll() {
 
 		// If all things worked, then bail
 		if (ret == 0) {
-			cerr << "\tOpened " << uinput_filename[i] << endl;
+			LOG4CPLUS_INFO(logger, "Opened " << uinput_filename[i]);
 			break;
 		}
 
@@ -51,16 +53,16 @@ void UInput::openAll() {
 			continue;
 
 		if (ret == EACCES) {
-			cerr << "Permission denied. Check you have permission to uinput." << endl;
+			LOG4CPLUS_ERROR(logger, "Permission denied. Check you have permission to uinput.");
 		} else {
-			cerr << errno << " " << strerror(errno) << endl;
+			LOG4CPLUS_ERROR(logger, errno << " " << strerror(errno));
 		}
 
 		throw std::runtime_error("Failed to open uinput");
 	}
 
 	if (ret != 0) {
-		cerr << "uinput was not found. Is the uinput module loaded?" << endl;
+		LOG4CPLUS_ERROR(logger, "uinput was not found. Is the uinput module loaded?");
 		throw std::runtime_error("Failed to open uinput");
 	}
 }
@@ -104,7 +106,7 @@ void UInput::create() {
 		throw std::runtime_error("Failed to create uinput");
 	}
 
-	cerr << "Created uinput device" << endl;
+	LOG4CPLUS_INFO(logger, "Created uinput device");
 
 	// This sleep is here, because (for some reason) you need to wait before
 	// sending you first uinput event.

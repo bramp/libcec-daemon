@@ -16,19 +16,24 @@
  */
 #include "libcec.h"
 
+#include <cstdio>
 #include <iostream>
-#include <cstddef>
 #include <stdexcept>
 #include <cassert>
 #include <map>
 
+#include <log4cplus/logger.h>
+
 using namespace CEC;
+using namespace log4cplus;
 
 using std::cout;
 using std::cerr;
 using std::endl;
 using std::hex;
 using std::map;
+
+static Logger logger = Logger::getInstance("libcec");
 
 // cecloader has to be after some #includes and using namespaces :(
 #include <cecloader.h>

@@ -16,7 +16,7 @@ Build
 	git submodule update
 
         # You might need some libraries
-        sudo apt-get install libboost-program-options-dev
+        sudo apt-get install libboost-program-options-dev liblog4cplus-dev
 
 	# Now build
 	make

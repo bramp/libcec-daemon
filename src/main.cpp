@@ -18,9 +18,11 @@
 
 #include <boost/program_options.hpp>
 
-#define VERSION "libcec-daemon v0.9"
+#include <log4cplus/logger.h>
+#include <log4cplus/configurator.h>
 
 using namespace CEC;
+using namespace log4cplus;
 
 using std::cout;
 using std::cerr;
@@ -29,6 +31,8 @@ using std::max;
 using std::string;
 using std::vector;
 
+static Logger logger = Logger::getInstance("main");
+
 const vector<__u16> Main::uinputCecMap = Main::setupUinputMap();
 
 Main & Main::instance() {
@@ -36,19 +40,21 @@ Main & Main::instance() {
 	return main;
 }
 
-Main::Main() : cec("Linux PC", this), uinput("libcec-daemon", uinputCecMap), running(true) {
-
-	std::cerr << "Main::Main()" << std::endl;
+Main::Main() : cec(CEC_NAME, this), uinput(UINPUT_NAME, uinputCecMap), running(true) {
+	LOG4CPLUS_TRACE_STR(logger, "Main::Main()");
 
 	signal (SIGINT,  &Main::signalHandler);
 	signal (SIGTERM, &Main::signalHandler);
 }
 
 Main::~Main() {
+	LOG4CPLUS_TRACE_STR(logger, "Main::~Main()");
 	stop();
 }
 
 void Main::loop() {
+	LOG4CPLUS_TRACE_STR(logger, "Main::loop()");
+
 	cec.open();
 	while (running) {
 		cerr << "Loop" << endl;
@@ -58,15 +64,17 @@ void Main::loop() {
 }
 
 void Main::stop() {
+	LOG4CPLUS_TRACE_STR(logger, "Main::stop()");
 	running = false;
 }
 
 void Main::listDevices() {
+	LOG4CPLUS_TRACE_STR(logger, "Main::listDevices()");
 	cec.listDevices();
 }
 
 void Main::signalHandler(int sigNum) {
-	cerr << "SignalHanlder(" << sigNum << ")" << endl;
+	LOG4CPLUS_DEBUG_STR(logger, "Main::signalHandler()");
 
 	Main::instance().stop();
 }
@@ -161,13 +169,12 @@ const std::vector<__u16> & Main::setupUinputMap() {
 }
 
 int Main::onCecLogMessage(const cec_log_message &message) {
-	cerr << message;
-
+	LOG4CPLUS_DEBUG(logger, "Main::onCecLogMessage(" << message << ")");
 	return 1;
 }
 
 int Main::onCecKeyPress(const cec_keypress &key) {
-	cerr << key;
+	LOG4CPLUS_DEBUG(logger, "Main::onCecKeyPress(" << key << ")");
 
 	int uinputKey = 0;
 
@@ -176,28 +183,32 @@ int Main::onCecKeyPress(const cec_keypress &key) {
 		uinputKey = uinputCecMap[key.keycode];
 
 	if (uinputKey != 0) {
-		cerr << " sent " << uinputKey;
+		LOG4CPLUS_DEBUG(logger, "sent " << uinputKey);
 
 		uinput.send_event(EV_KEY, uinputKey, key.duration == 0 ? 1 : 0);
 		uinput.sync();
 	}
 
-	cerr << endl;
 	return 1;
 }
 
 int Main::onCecCommand(const cec_command & command) {
-	//cerr << command;
+	LOG4CPLUS_DEBUG(logger, "Main::onCecCommand(" << command << ")");
 	return 1;
 }
 
 
 int Main::onCecConfigurationChanged(const libcec_configuration & configuration) {
-	//cerr << configuration;
+	LOG4CPLUS_DEBUG(logger, "Main::onCecConfigurationChanged(" << configuration << ")");
 	return 1;
 }
 
 int main (int argc, char *argv[]) {
+
+    BasicConfigurator config;
+    config.configure();
+
+    logger.setLogLevel(TRACE_LOG_LEVEL);
 
 	namespace po = boost::program_options;
 
@@ -229,7 +240,12 @@ int main (int argc, char *argv[]) {
 		return 0;
 	}
 
-	int loglevel = max((size_t)vm.count("verbose"), (size_t)2);
+	int loglevel = max(vm.count("verbose"), (size_t)2);
+	switch (loglevel) {
+		case 2:  logger.setLogLevel(TRACE_LOG_LEVEL); break;
+		case 1:  logger.setLogLevel(TRACE_LOG_LEVEL); break;
+		default: logger.setLogLevel(TRACE_LOG_LEVEL); break;
+	}
 
 	try {
 		// Create the main
