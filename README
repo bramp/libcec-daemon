@@ -3,8 +3,10 @@ A simple daemon to connect libcec to uinput.
 by Andrew Brampton
 
 Licence
-	Currently under the GPL, but only because libcec (on which we depend) is under the GPL. I have full intentions
-	to relicence this project as BSD when libcec changes to either LGPL, or I do not need to depend on it anymore.
+	Currently under the GPL, but only because libcec (on which we depend)
+	is under the GPL. I have full intentions to relicence this project as
+	BSD when libcec changes to either LGPL, or I do not need to depend on
+	it anymore.
 
 Build
 	# Checkout the main source
