@@ -41,28 +41,28 @@ static Logger logger = Logger::getInstance("libcec");
 // Map of control codes to Strings
 const map<enum cec_user_control_code, const char *> Cec::cecUserControlCodeName = Cec::setupUserControlCodeName();
 
-int cecLogMessage(void *cbParam, const cec_log_message &message) {
+int cecLogMessage(void *cbParam, const cec_log_message message) {
 	try {
 		return ((CecCallback*) cbParam)->onCecLogMessage(message);
 	} catch (...) {}
 	return 0;
 }
 
-int cecKeyPress(void *cbParam, const cec_keypress &key) {
+int cecKeyPress(void *cbParam, const cec_keypress key) {
 	try {
 		return ((CecCallback*) cbParam)->onCecKeyPress(key);
 	} catch (...) {}
 	return 0;
 }
 
-int cecCommand(void *cbParam, const cec_command &command) {
+int cecCommand(void *cbParam, const cec_command command) {
 	try {
 		return ((CecCallback*) cbParam)->onCecCommand(command);
 	} catch (...) {}
 	return 0;
 }
 
-int cecConfigurationChanged(void *cbParam, const libcec_configuration & configuration) {
+int cecConfigurationChanged(void *cbParam, const libcec_configuration configuration) {
 	try {
 		return ((CecCallback*) cbParam)->onCecConfigurationChanged(configuration);
 	} catch (...) {}
