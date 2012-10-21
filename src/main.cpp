@@ -122,7 +122,7 @@ const std::vector<__u16> & Main::setupUinputMap() {
 		uinputCecMap[CEC_USER_CONTROL_CODE_PREVIOUS_CHANNEL            ] = 0;
 		uinputCecMap[CEC_USER_CONTROL_CODE_SOUND_SELECT                ] = 0;
 		uinputCecMap[CEC_USER_CONTROL_CODE_INPUT_SELECT                ] = 0;
-		uinputCecMap[CEC_USER_CONTROL_CODE_DISPLAY_INFORMATION         ] = 0;
+		uinputCecMap[CEC_USER_CONTROL_CODE_DISPLAY_INFORMATION         ] = KEY_INFO;
 		uinputCecMap[CEC_USER_CONTROL_CODE_HELP                        ] = KEY_HELP;
 		uinputCecMap[CEC_USER_CONTROL_CODE_PAGE_UP                     ] = KEY_PAGEUP;
 		uinputCecMap[CEC_USER_CONTROL_CODE_PAGE_DOWN                   ] = KEY_PAGEDOWN;

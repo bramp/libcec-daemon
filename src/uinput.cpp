@@ -27,7 +27,7 @@ UInput::~UInput() {
 }
 
 int UInput::open(const char *uinput_path) {
-	this->fd = ::open(uinput_path, O_WRONLY);
+	this->fd = ::open(uinput_path, O_WRONLY | O_NONBLOCK);
 	if(this->fd < 0) {
 		return errno;
 	}
