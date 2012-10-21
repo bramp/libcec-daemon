@@ -12,13 +12,29 @@ Build
 	# Checkout the main source
 	git clone
 
-	# We use a newer version of libcec, so we need to
-	# enable the submodule
+	# Now we need some libraries
+        sudo apt-get install libboost-program-options-dev liblog4cplus-dev
+
+	# Also these for building libcec
+	sudo apt-get install liblockdev1-dev libudev-dev
+
+	# We use a newer version of libcec, we don't use the one available in
+	# packages. So we need to checkout the code using a git submodule
 	git submodule init
 	git submodule update
 
-        # You might need some libraries
-        sudo apt-get install libboost-program-options-dev liblog4cplus-dev
-
-	# Now build
+	# Then you need to compile libcec
+	cd lib/libcec
+	autoreconf -vif
+	./configure
 	make
+	sudo make install
+
+	# If you have trouble compiling libcec, please refer to their documentaiton.
+
+	# Now continue to build libcec-daemon
+	cd ../..
+	make
+
+How to use
+	./libcec-daemon
