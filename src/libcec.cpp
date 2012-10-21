@@ -78,6 +78,28 @@ struct ICECAdapterDeleter : std::default_delete<ICECAdapter> {
 	}
 };
 
+/**
+ * Redirects the stream buffer for a stream for the lifetime of this object
+ */
+class RedirectStreamBuffer {
+private:
+	std::ios & stream;
+	std::streambuf * orig_sb;
+
+public:
+	RedirectStreamBuffer(std::ios &stream, std::streambuf * new_sb) : stream(stream) {
+		orig_sb = stream.rdbuf( new_sb );
+	}
+
+	~RedirectStreamBuffer() {
+		restore();
+	}
+
+	void restore() {
+		stream.rdbuf( orig_sb );
+	}
+};
+
 ICECAdapter * Cec::CecInit(const char * name, CecCallback * callback) {
 	assert(name != NULL);
 	assert(callback != NULL);
@@ -94,6 +116,8 @@ ICECAdapter * Cec::CecInit(const char * name, CecCallback * callback) {
 	config.callbackParam                = callback;
 	config.callbacks                    = &callbacks;
 
+	// LibCecInitialise is noisy, so we redirect cout to nowhere
+	RedirectStreamBuffer redirect(cout, 0);
 	return (ICECAdapter *)LibCecInitialise(&config);
 }
 
