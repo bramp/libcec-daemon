@@ -1,5 +1,5 @@
 libcec-daemon
-A simple daemon to connect libcec to uinput.
+A simple daemon to connect libcec to uinput. That is, using your TV to control your PC!
 by Andrew Brampton
 
 Licence
@@ -10,10 +10,10 @@ Licence
 
 Build
 	# Checkout the main source
-	git clone
+	git clone git://github.com/bramp/libcec-daemon.git
 
 	# Now we need some libraries
-        sudo apt-get install libboost-program-options-dev liblog4cplus-dev
+	sudo apt-get install libboost-program-options-dev liblog4cplus-dev
 
 	# Also these for building libcec
 	sudo apt-get install liblockdev1-dev libudev-dev
@@ -36,5 +36,14 @@ Build
 	cd ../..
 	make
 
-How to use
-	./libcec-daemon
+Usage
+	./libcec-daemon [-h] [-v] [-d] [usb]
+
+Allowed options:
+  -h [ --help ]         show help message
+  -V [ --version ]      show version (and exit)
+  -d [ --daemon ]       daemon mode, run in background
+  -l [ --list ]         list available CEC adapters and devices
+  -v [ --verbose ]      verbose output (use twice for more)
+  --usb arg             USB adapter path (as shown by --list)
+
