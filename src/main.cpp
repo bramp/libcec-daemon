@@ -1,6 +1,6 @@
 /**
  * libcec-daemon
- * A simple daemon to connect libcec to uinput.
+ * A simple daemon to connect libcec to uinput. That is, using your TV to control your PC! 
  * by Andrew Brampton
  *
  * TODO
@@ -41,6 +41,7 @@ static Logger logger = Logger::getInstance("main");
 const vector<__u16> Main::uinputCecMap = Main::setupUinputMap();
 
 Main & Main::instance() {
+	// Singleton pattern so we can use main from a sighandle
 	static Main main;
 	return main;
 }
@@ -248,6 +249,7 @@ int main (int argc, char *argv[]) {
 
 	int loglevel = max(vm.count("verbose"), (size_t)2);
 	switch (loglevel) {
+		// TODO Fix the below log levels
 		case 2:  logger.setLogLevel(TRACE_LOG_LEVEL); break;
 		case 1:  logger.setLogLevel(TRACE_LOG_LEVEL); break;
 		default: logger.setLogLevel(TRACE_LOG_LEVEL); break;

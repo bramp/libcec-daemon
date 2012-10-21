@@ -12,6 +12,7 @@
 
 using namespace log4cplus;
 
+// Various uinput files we try and open
 static const char *uinput_filename[] = {"/dev/uinput", "/dev/input/uinput", "/dev/misc/uinput"};
 
 static Logger logger = Logger::getInstance("uinput");

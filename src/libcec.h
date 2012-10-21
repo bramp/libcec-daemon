@@ -15,6 +15,9 @@ class CecCallback {
 		virtual int onCecConfigurationChanged(const CEC::libcec_configuration & configuration) = 0;
 };
 
+/**
+ * Simple wrapper class around libcec
+ */
 class Cec {
 
 	private:
