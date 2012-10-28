@@ -255,11 +255,12 @@ int main (int argc, char *argv[]) {
 		loglevel = min(loglevel, 2);
 	}
 
+	Logger root = Logger::getRoot();
 	switch (loglevel) {
-		case 2:  logger.setLogLevel(TRACE_LOG_LEVEL); break;
-		case 1:  logger.setLogLevel(DEBUG_LOG_LEVEL); break;
-		default: logger.setLogLevel(INFO_LOG_LEVEL); break;
-		case -1: logger.setLogLevel(FATAL_LOG_LEVEL); break;
+		case 2:  root.setLogLevel(TRACE_LOG_LEVEL); break;
+		case 1:  root.setLogLevel(DEBUG_LOG_LEVEL); break;
+		default: root.setLogLevel(INFO_LOG_LEVEL); break;
+		case -1: root.setLogLevel(FATAL_LOG_LEVEL); break;
 	}
 
 	try {
