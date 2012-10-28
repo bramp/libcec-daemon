@@ -43,7 +43,7 @@ class Cec {
 		/**
 		 * List all found adapters and prints them out
 		 */
-		void listDevices();
+		std::ostream & listDevices(std::ostream & out);
 
 		/**
 		 * Opens the first adapter it finds

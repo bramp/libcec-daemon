@@ -173,7 +173,7 @@ void Cec::close() {
  * Prints the name of all found adapters
  * This will close any open device!
  */
-void Cec::listDevices() {
+ostream & Cec::listDevices(ostream & out) {
 	cec_adapter devices[10];
 	int8_t ret = cec->FindAdapters(devices, 10, NULL);
 	if (ret < 0) {
@@ -186,10 +186,10 @@ void Cec::listDevices() {
 	}
 
 	for (int8_t i = 0; i < ret; i++) {
-		cout << "[" << (int) i << "] port:" << devices[i].comm << " path:" << devices[i].path << endl;
+		out << "[" << (int) i << "] port:" << devices[i].comm << " path:" << devices[i].path << endl;
 
 		if (!cec->Open(devices[i].comm)) {
-			cout << "\tFailed to open" << endl;
+			out << "\tFailed to open" << endl;
 		}
 
 		cec_logical_addresses devices = cec->GetActiveDevices();
@@ -201,26 +201,13 @@ void Cec::listDevices() {
 				cec_osd_name name = cec->GetDeviceOSDName(logical_addres);
 				cec_vendor_id vendor = (cec_vendor_id) cec->GetDeviceVendorId(logical_addres);
 
-				cout << "\t"  << cec->ToString(logical_addres)
-				     << "@0x" << hex << physical_address
-				     << " "   << name.name << " (" << cec->ToString(vendor) << ")"
-				     << endl;
+				out << "\t"  << cec->ToString(logical_addres)
+				    << "@0x" << hex << physical_address
+				    << " "   << name.name << " (" << cec->ToString(vendor) << ")"
+				    << endl;
 			}
 		}
 	}
-}
-
-std::ostream& operator<<(std::ostream &out, const cec_log_level & log) {
-	if (log & CEC_LOG_ERROR)
-		out << "E";
-	if (log & CEC_LOG_WARNING)
-		out << "W";
-	if (log & CEC_LOG_NOTICE)
-		out << "N";
-	if (log & CEC_LOG_TRAFFIC)
-		out << "T";
-	if (log & CEC_LOG_DEBUG)
-		out << "D";
 	return out;
 }
 
@@ -325,6 +312,19 @@ std::ostream& operator<<(std::ostream &out, const cec_user_control_code code) {
 	return out << it->second;
 }
 
+std::ostream& operator<<(std::ostream &out, const cec_log_level & log) {
+	if (log & CEC_LOG_ERROR)
+		out << "E";
+	if (log & CEC_LOG_WARNING)
+		out << "W";
+	if (log & CEC_LOG_NOTICE)
+		out << "N";
+	if (log & CEC_LOG_TRAFFIC)
+		out << "T";
+	if (log & CEC_LOG_DEBUG)
+		out << "D";
+	return out;
+}
 
 std::ostream& operator<<(std::ostream &out, const cec_log_message & message) {
 	return out << message.time << " [" << message.level << "]" << message.message << endl;

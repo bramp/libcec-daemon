@@ -77,7 +77,7 @@ void Main::stop() {
 
 void Main::listDevices() {
 	LOG4CPLUS_TRACE_STR(logger, "Main::listDevices()");
-	cec.listDevices();
+	cec.listDevices(cout);
 }
 
 void Main::signalHandler(int sigNum) {
