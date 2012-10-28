@@ -22,6 +22,7 @@
 #include <vector>
 
 #include <boost/program_options.hpp>
+#include "accumulator.hpp"
 
 #include <log4cplus/logger.h>
 #include <log4cplus/loggingmacros.h>
@@ -33,7 +34,7 @@ using namespace log4cplus;
 using std::cout;
 using std::cerr;
 using std::endl;
-using std::max;
+using std::min;
 using std::string;
 using std::vector;
 
@@ -215,7 +216,7 @@ int main (int argc, char *argv[]) {
     BasicConfigurator config;
     config.configure();
 
-    logger.setLogLevel(TRACE_LOG_LEVEL);
+    int loglevel = 0;
 
 	namespace po = boost::program_options;
 
@@ -225,8 +226,8 @@ int main (int argc, char *argv[]) {
 	    ("version,V", "show version (and exit)")
 	    ("daemon,d",  "daemon mode, run in background")
 	    ("list,l",    "list available CEC adapters and devices")
-	    ("verbose,v", "verbose output (use twice for more)")
-	    //("quiet,q",   "quiet output (print nothing)")
+	    ("verbose,v", accumulator<int>(&loglevel)->implicit_value(1), "verbose output (use -vv for more)")
+	    ("quiet,q",   "quiet output (print almost nothing)")
 	    ("usb", po::value<std::string>(), "USB adapter path (as shown by --list)")
 	;
 
@@ -248,12 +249,17 @@ int main (int argc, char *argv[]) {
 		return 0;
 	}
 
-	int loglevel = max(vm.count("verbose"), (size_t)2);
+	if(vm.count("quiet")) {
+		loglevel = -1;
+	} else {
+		loglevel = min(loglevel, 2);
+	}
+
 	switch (loglevel) {
-		// TODO Fix the below log levels
 		case 2:  logger.setLogLevel(TRACE_LOG_LEVEL); break;
-		case 1:  logger.setLogLevel(TRACE_LOG_LEVEL); break;
-		default: logger.setLogLevel(TRACE_LOG_LEVEL); break;
+		case 1:  logger.setLogLevel(DEBUG_LOG_LEVEL); break;
+		default: logger.setLogLevel(INFO_LOG_LEVEL); break;
+		case -1: logger.setLogLevel(FATAL_LOG_LEVEL); break;
 	}
 
 	try {
