@@ -64,7 +64,7 @@ void Main::loop() {
 
 	cec.open();
 	while (running) {
-		cerr << "Loop" << endl;
+		LOG4CPLUS_TRACE_STR(logger, "Loop");
 		sleep(1);
 	}
 	cec.close();

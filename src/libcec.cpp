@@ -18,6 +18,7 @@
 
 #include <cstdio>
 #include <iostream>
+#include <ostream>
 #include <stdexcept>
 #include <cassert>
 #include <map>
@@ -28,16 +29,17 @@
 using namespace CEC;
 using namespace log4cplus;
 
-using std::cout;
-using std::cerr;
 using std::endl;
 using std::hex;
 using std::map;
-
-static Logger logger = Logger::getInstance("libcec");
+using std::ostream;
 
 // cecloader has to be after some #includes and using namespaces :(
+using std::cout;
+using std::cerr;
 #include <cecloader.h>
+
+static Logger logger = Logger::getInstance("libcec");
 
 // Map of control codes to Strings
 const map<enum cec_user_control_code, const char *> Cec::cecUserControlCodeName = Cec::setupUserControlCodeName();
@@ -134,10 +136,9 @@ Cec::~Cec() {}
 
 
 void Cec::open() {
+	LOG4CPLUS_TRACE_STR(logger, "Cec::open()");
 
 	assert(cec != NULL);
-
-	cerr << "Cec::open()" << endl;
 
 	// Search for adapters
 	cec_adapter devices[10];
@@ -155,7 +156,7 @@ void Cec::open() {
 		throw std::runtime_error("Failed to open adapter");
 	}
 
-	cerr << "Opened " << devices[0].path << endl;
+	LOG4CPLUS_INFO(logger, "Opened " << devices[0].path);
 
 	// and made active
 	if (!cec->SetActiveSource(config.deviceTypes[0])) {
@@ -176,12 +177,12 @@ void Cec::listDevices() {
 	cec_adapter devices[10];
 	int8_t ret = cec->FindAdapters(devices, 10, NULL);
 	if (ret < 0) {
-		cout << "Error occurred searching for adapters" << endl;
-		return;
+		LOG4CPLUS_ERROR(logger, "Error occurred searching for adapters");
+		return out;
 	}
 
 	if (ret == 0) {
-		cout << "No adapters found" << endl;
+		LOG4CPLUS_ERROR(logger, "No adapters found");
 	}
 
 	for (int8_t i = 0; i < ret; i++) {
