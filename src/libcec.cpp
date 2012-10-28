@@ -23,6 +23,7 @@
 #include <map>
 
 #include <log4cplus/logger.h>
+#include <log4cplus/loggingmacros.h>
 
 using namespace CEC;
 using namespace log4cplus;

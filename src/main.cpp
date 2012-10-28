@@ -24,6 +24,7 @@
 #include <boost/program_options.hpp>
 
 #include <log4cplus/logger.h>
+#include <log4cplus/loggingmacros.h>
 #include <log4cplus/configurator.h>
 
 using namespace CEC;
