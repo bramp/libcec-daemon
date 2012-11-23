@@ -15,25 +15,14 @@ Build
 	# Now we need some libraries
 	sudo apt-get install libboost-program-options-dev liblog4cplus-dev
 
-	# Also these for building libcec
-	sudo apt-get install liblockdev1-dev libudev-dev
+	# Also we need the libcec libraries. Pulse eight provides east way to install
+	wget http://packages.pulse-eight.net/ubuntu/install-libcec.sh
+	sudo sh install-libcec.sh
 
-	# We use a newer version of libcec, we don't use the one available in
-	# packages. So we need to checkout the code using a git submodule
-	git submodule init
-	git submodule update
+	# If you have trouble getting libcec, please refer to their documentaiton.
 
-	# Then you need to compile libcec
-	cd lib/libcec
-	autoreconf -vif
-	./configure
-	make
-	sudo make install
-
-	# If you have trouble compiling libcec, please refer to their documentaiton.
-
-	# Now continue to build libcec-daemon
-	cd ../..
+	# Now build the libcec-daemon
+	cd libcec-daemon
 	make
 
 Usage

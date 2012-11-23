@@ -37,7 +37,7 @@ using std::ostream;
 // cecloader has to be after some #includes and using namespaces :(
 using std::cout;
 using std::cerr;
-#include <cecloader.h>
+#include <libcec/cecloader.h>
 
 static Logger logger = Logger::getInstance("libcec");
 

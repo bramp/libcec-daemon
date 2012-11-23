@@ -1,7 +1,7 @@
 #CC=clang++
 #CC=g++
-CFLAGS=-c -std=c++0x -g -Wall -Ilib/libcec/include
-LDFLAGS=-Llib/libcec/src/lib/.libs/ -lcec -ldl -lboost_program_options -llog4cplus
+CFLAGS=-c -std=c++0x -g -Wall
+LDFLAGS=-lcec -ldl -lboost_program_options -llog4cplus
 EXECUTABLE=libcec-daemon
 SOURCES=src/main.cpp src/uinput.cpp src/libcec.cpp
 OBJECTS=$(SOURCES:.cpp=.o)

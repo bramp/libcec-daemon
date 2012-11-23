@@ -1,5 +1,5 @@
 #include <cstddef>
-#include <cec.h>
+#include <libcec/cec.h>
 
 #include <memory>
 #include <map>
