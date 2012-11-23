@@ -327,7 +327,7 @@ std::ostream& operator<<(std::ostream &out, const cec_log_level & log) {
 }
 
 std::ostream& operator<<(std::ostream &out, const cec_log_message & message) {
-	return out << message.time << " [" << message.level << "]" << message.message << endl;
+	return out << message.time << " [" << message.level << "]" << message.message;
 }
 
 std::ostream& operator<<(std::ostream &out, const cec_keypress & key) {
