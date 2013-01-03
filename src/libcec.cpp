@@ -130,6 +130,9 @@ Cec::Cec(const char * name, CecCallback * callback) :
 	if (cec == NULL) {
 		throw std::runtime_error("Failed to initialise libCEC");
 	}
+	else {
+		cec->InitVideoStandalone(); // fix for the raspberry pi - initialises the video api
+	}
 }
 
 Cec::~Cec() {}
