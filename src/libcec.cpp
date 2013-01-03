@@ -130,6 +130,7 @@ Cec::Cec(const char * name, CecCallback * callback) :
 	if (cec == NULL) {
 		throw std::runtime_error("Failed to initialise libCEC");
 	}
+	cec->InitVideoStandalone();
 }
 
 Cec::~Cec() {}
