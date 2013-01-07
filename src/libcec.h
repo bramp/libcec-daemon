@@ -55,6 +55,11 @@ class Cec {
 		 */
 		void close();
 
+		/**
+		 * Sets the PC as the active source
+		 */
+		void activate();
+
 	// These are just wrapper functions, to map C callbacks to C++
 	friend int cecLogMessage (void *cbParam, const CEC::cec_log_message &message);
 	friend int cecKeyPress   (void *cbParam, const CEC::cec_keypress &key);

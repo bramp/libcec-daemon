@@ -170,6 +170,11 @@ void Cec::close() {
 	cec->Close();
 }
 
+void Cec::activate() {
+	//cout << "activate()" << endl;
+	cec->SetActiveSource();
+}
+
 /**
  * Prints the name of all found adapters
  * This will close any open device!
