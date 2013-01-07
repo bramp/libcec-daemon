@@ -164,11 +164,11 @@ const std::vector<__u16> & Main::setupUinputMap() {
 		uinputCecMap[CEC_USER_CONTROL_CODE_POWER_TOGGLE_FUNCTION       ] = 0;
 		uinputCecMap[CEC_USER_CONTROL_CODE_POWER_OFF_FUNCTION          ] = 0;
 		uinputCecMap[CEC_USER_CONTROL_CODE_POWER_ON_FUNCTION           ] = 0;
-		uinputCecMap[CEC_USER_CONTROL_CODE_F1_BLUE                     ] = KEY_BLUE;
-		uinputCecMap[CEC_USER_CONTROL_CODE_F2_RED                      ] = KEY_RED;
-		uinputCecMap[CEC_USER_CONTROL_CODE_F3_GREEN                    ] = KEY_GREEN;
-		uinputCecMap[CEC_USER_CONTROL_CODE_F4_YELLOW                   ] = KEY_YELLOW;
-		uinputCecMap[CEC_USER_CONTROL_CODE_F5                          ] = 0;
+		uinputCecMap[CEC_USER_CONTROL_CODE_F1_BLUE                     ] = KEY_F5; // Mythtv says "F1 is help and we normally map blue to F5"
+		uinputCecMap[CEC_USER_CONTROL_CODE_F2_RED                      ] = KEY_F2;
+		uinputCecMap[CEC_USER_CONTROL_CODE_F3_GREEN                    ] = KEY_F3;
+		uinputCecMap[CEC_USER_CONTROL_CODE_F4_YELLOW                   ] = KEY_F4;
+		uinputCecMap[CEC_USER_CONTROL_CODE_F5                          ] = KEY_F6; // Above note
 		uinputCecMap[CEC_USER_CONTROL_CODE_DATA                        ] = 0;
 		uinputCecMap[CEC_USER_CONTROL_CODE_AN_RETURN                   ] = 0;
 	}
