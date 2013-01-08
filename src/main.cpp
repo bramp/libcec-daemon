@@ -28,6 +28,15 @@
 #include <log4cplus/loggingmacros.h>
 #include <log4cplus/configurator.h>
 
+// Socket stuff
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+
 using namespace CEC;
 using namespace log4cplus;
 
@@ -66,6 +75,51 @@ void Main::loop() {
 	cec.open();
 	while (running) {
 		LOG4CPLUS_TRACE_STR(logger, "Loop");
+		//sleep(1);
+		// Socket
+                int sockfd, newsockfd, portno;
+                socklen_t clilen;
+		char buffer[256];
+                struct sockaddr_in serv_addr, cli_addr;
+		int n;
+
+                sockfd = socket(AF_INET, SOCK_STREAM, 0);
+                if (sockfd < 0)
+                        cout << "ERROR opening socket" << endl;
+                bzero((char *) &serv_addr, sizeof(serv_addr));
+                portno = 23456;
+                serv_addr.sin_family = AF_INET;
+                serv_addr.sin_addr.s_addr = INADDR_ANY;
+                serv_addr.sin_port = htons(portno);
+                /*if (bind(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0)
+                	cout << "ERROR on binding" << endl;*/
+		int on = 1;
+		if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) < 0)
+			cout << "Couldn't set socket params!" << endl;
+		int so = bind(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr));
+		while(so < 0) {
+			cout << "ERROR on binding" << endl;
+			sleep(1);
+			so = bind(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr));
+		}
+                listen(sockfd,5);
+                clilen = sizeof(cli_addr);
+                newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
+                if (newsockfd < 0)
+                	cout << "ERROR on accept" << endl;
+		bzero(buffer,256);
+		//cout << "Socket created!" << endl;
+ 	 	n = read(newsockfd,buffer,255);
+		if (n < 0)
+			cout << "Error reading from socket" << endl;
+   		/*if (strcmp(buffer, "call\n") == 0) {
+			cout << "call received" << endl;
+			cec.activate();
+       		}*/
+		cec.activate();
+		//cout << "message: " << buffer << endl;
+		close(newsockfd);
+                close(sockfd);
 		sleep(1);
 	}
 	cec.close();
@@ -281,6 +335,44 @@ int main (int argc, char *argv[]) {
 		}
 
 		main.loop();
+
+		// Socket
+		/*int sockfd, newsockfd, portno, pid;
+        	socklen_t clilen;
+        	struct sockaddr_in serv_addr, cli_addr;
+
+        	sockfd = socket(AF_INET, SOCK_STREAM, 0);
+        	if (sockfd < 0)
+                	cout << "ERROR opening socket" << endl;
+		cout << "Made socket" << endl;
+        	bzero((char *) &serv_addr, sizeof(serv_addr));
+        	portno = 23456;
+        	serv_addr.sin_family = AF_INET;
+        	serv_addr.sin_addr.s_addr = INADDR_ANY;
+        	serv_addr.sin_port = htons(portno);
+		if (bind(sockfd, (struct sockaddr *) &serv_addr,
+                sizeof(serv_addr)) < 0)
+                cout << "ERROR on binding" << endl;
+	        listen(sockfd,5);
+        	clilen = sizeof(cli_addr);
+        	while (true) {
+                	newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
+                	if (newsockfd < 0)
+                        	cout << "ERROR on accept" << endl;
+                	pid = fork();
+                	if (pid < 0)
+                        	cout << "ERROR on fork" << endl;
+                	if (pid == 0) {
+                        	close(sockfd);
+                        	//dostuff(newsockfd);
+				cout << "Socket created!" << endl;
+                        	exit(0);
+                	}
+                	else
+				close(newsockfd);
+        	} // end of while
+        	close(sockfd);
+        	return 0; // we never get here */
 
 	} catch (std::exception & e) {
 		cerr << e.what() << endl;
