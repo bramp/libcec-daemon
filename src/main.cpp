@@ -118,7 +118,7 @@ const std::vector<__u16> & Main::setupUinputMap() {
 		uinputCecMap[CEC_USER_CONTROL_CODE_NUMBER9                     ] = KEY_9;
 		uinputCecMap[CEC_USER_CONTROL_CODE_DOT                         ] = 0;
 		uinputCecMap[CEC_USER_CONTROL_CODE_ENTER                       ] = KEY_ENTER;
-		uinputCecMap[CEC_USER_CONTROL_CODE_CLEAR                       ] = 0;
+		uinputCecMap[CEC_USER_CONTROL_CODE_CLEAR                       ] = KEY_EXIT;
 		uinputCecMap[CEC_USER_CONTROL_CODE_NEXT_FAVORITE               ] = 0;
 		uinputCecMap[CEC_USER_CONTROL_CODE_CHANNEL_UP                  ] = KEY_CHANNELUP;
 		uinputCecMap[CEC_USER_CONTROL_CODE_CHANNEL_DOWN                ] = KEY_CHANNELDOWN;
@@ -145,9 +145,9 @@ const std::vector<__u16> & Main::setupUinputMap() {
 		uinputCecMap[CEC_USER_CONTROL_CODE_STOP_RECORD                 ] = 0;
 		uinputCecMap[CEC_USER_CONTROL_CODE_PAUSE_RECORD                ] = 0;
 		uinputCecMap[CEC_USER_CONTROL_CODE_ANGLE                       ] = 0;
-		uinputCecMap[CEC_USER_CONTROL_CODE_SUB_PICTURE                 ] = 0;
+		uinputCecMap[CEC_USER_CONTROL_CODE_SUB_PICTURE                 ] = KEY_SUBTITLE;
 		uinputCecMap[CEC_USER_CONTROL_CODE_VIDEO_ON_DEMAND             ] = 0;
-		uinputCecMap[CEC_USER_CONTROL_CODE_ELECTRONIC_PROGRAM_GUIDE    ] = 0;
+		uinputCecMap[CEC_USER_CONTROL_CODE_ELECTRONIC_PROGRAM_GUIDE    ] = KEY_EPG;
 		uinputCecMap[CEC_USER_CONTROL_CODE_TIMER_PROGRAMMING           ] = 0;
 		uinputCecMap[CEC_USER_CONTROL_CODE_INITIAL_CONFIGURATION       ] = 0;
 		uinputCecMap[CEC_USER_CONTROL_CODE_PLAY_FUNCTION               ] = 0;
@@ -169,7 +169,7 @@ const std::vector<__u16> & Main::setupUinputMap() {
 		uinputCecMap[CEC_USER_CONTROL_CODE_F3_GREEN                    ] = KEY_GREEN;
 		uinputCecMap[CEC_USER_CONTROL_CODE_F4_YELLOW                   ] = KEY_YELLOW;
 		uinputCecMap[CEC_USER_CONTROL_CODE_F5                          ] = 0;
-		uinputCecMap[CEC_USER_CONTROL_CODE_DATA                        ] = 0;
+		uinputCecMap[CEC_USER_CONTROL_CODE_DATA                        ] = KEY_TEXT;
 		uinputCecMap[CEC_USER_CONTROL_CODE_AN_RETURN                   ] = 0;
 	}
 
