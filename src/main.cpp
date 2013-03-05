@@ -193,7 +193,7 @@ int Main::onCecKeyPress(const cec_keypress &key) {
 	if (uinputKey != 0) {
 		LOG4CPLUS_DEBUG(logger, "sent " << uinputKey);
 
-		uinput.send_event(EV_KEY, uinputKey, key.duration == 0 ? 1 : 0);
+		uinput.send_event(EV_KEY, uinputKey, key.duration == 0 ? 2 : 0);
 		uinput.sync();
 	}
 
