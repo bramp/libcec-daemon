@@ -193,7 +193,12 @@ int Main::onCecKeyPress(const cec_keypress &key) {
 	if (uinputKey != 0) {
 		LOG4CPLUS_DEBUG(logger, "sent " << uinputKey);
 
+		// Fix for issues with ealier veriosns of libcec and key repeats below < 2.0.5
+		#if LIBCEC_VERSION_CURRENT < 0x2005
+		uinput.send_event(EV_KEY, uinputKey, key.duration == 0 ? 1 : 0);
+		#else
 		uinput.send_event(EV_KEY, uinputKey, key.duration == 0 ? 2 : 0);
+		#endif
 		uinput.sync();
 	}
 
