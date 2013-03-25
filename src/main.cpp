@@ -101,7 +101,7 @@ const std::vector<__u16> & Main::setupUinputMap() {
 		uinputCecMap[CEC_USER_CONTROL_CODE_RIGHT_DOWN                  ] = 0;
 		uinputCecMap[CEC_USER_CONTROL_CODE_LEFT_UP                     ] = 0;
 		uinputCecMap[CEC_USER_CONTROL_CODE_LEFT_DOWN                   ] = 0;
-		uinputCecMap[CEC_USER_CONTROL_CODE_ROOT_MENU                   ] = 0;
+		uinputCecMap[CEC_USER_CONTROL_CODE_ROOT_MENU                   ] = KEY_HOME;
 		uinputCecMap[CEC_USER_CONTROL_CODE_SETUP_MENU                  ] = KEY_SETUP;
 		uinputCecMap[CEC_USER_CONTROL_CODE_CONTENTS_MENU               ] = KEY_MENU;
 		uinputCecMap[CEC_USER_CONTROL_CODE_FAVORITE_MENU               ] = KEY_FAVORITES;
