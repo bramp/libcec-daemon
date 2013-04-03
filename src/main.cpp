@@ -116,7 +116,7 @@ const std::vector<__u16> & Main::setupUinputMap() {
 		uinputCecMap[CEC_USER_CONTROL_CODE_NUMBER7                     ] = KEY_7;
 		uinputCecMap[CEC_USER_CONTROL_CODE_NUMBER8                     ] = KEY_8;
 		uinputCecMap[CEC_USER_CONTROL_CODE_NUMBER9                     ] = KEY_9;
-		uinputCecMap[CEC_USER_CONTROL_CODE_DOT                         ] = 0;
+		uinputCecMap[CEC_USER_CONTROL_CODE_DOT                         ] = KEY_DOT;
 		uinputCecMap[CEC_USER_CONTROL_CODE_ENTER                       ] = KEY_ENTER;
 		uinputCecMap[CEC_USER_CONTROL_CODE_CLEAR                       ] = KEY_EXIT;
 		uinputCecMap[CEC_USER_CONTROL_CODE_NEXT_FAVORITE               ] = 0;
@@ -170,7 +170,8 @@ const std::vector<__u16> & Main::setupUinputMap() {
 		uinputCecMap[CEC_USER_CONTROL_CODE_F4_YELLOW                   ] = KEY_YELLOW;
 		uinputCecMap[CEC_USER_CONTROL_CODE_F5                          ] = 0;
 		uinputCecMap[CEC_USER_CONTROL_CODE_DATA                        ] = KEY_TEXT;
-		uinputCecMap[CEC_USER_CONTROL_CODE_AN_RETURN                   ] = 0;
+		uinputCecMap[CEC_USER_CONTROL_CODE_AN_RETURN                   ] = KEY_ESC;
+		uinputCecMap[CEC_USER_CONTROL_CODE_AN_CHANNELS_LIST            ] = KEY_LIST;
 	}
 
 	return uinputCecMap;

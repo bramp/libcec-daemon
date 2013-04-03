@@ -295,6 +295,7 @@ map<cec_user_control_code, const char *> & Cec::setupUserControlCodeName() {
 		cecUserControlCodeName[CEC_USER_CONTROL_CODE_F5]="F5";
 		cecUserControlCodeName[CEC_USER_CONTROL_CODE_DATA]="DATA";
 		cecUserControlCodeName[CEC_USER_CONTROL_CODE_AN_RETURN]="AN_RETURN";
+		cecUserControlCodeName[CEC_USER_CONTROL_CODE_AN_CHANNELS_LIST]="AN_CHANNELS_LIST";
 		cecUserControlCodeName[CEC_USER_CONTROL_CODE_UNKNOWN]="UNKNOWN";
 	}
 
