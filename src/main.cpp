@@ -20,6 +20,7 @@
 #include <cstddef>
 #include <csignal>
 #include <vector>
+#include <unistd.h>
 
 #include <boost/program_options.hpp>
 #include "accumulator.hpp"
@@ -48,7 +49,7 @@ Main & Main::instance() {
 	return main;
 }
 
-Main::Main() : cec(CEC_NAME, this), uinput(UINPUT_NAME, uinputCecMap), running(true) {
+Main::Main() : cec(getCecName(), this), uinput(UINPUT_NAME, uinputCecMap), running(true) {
 	LOG4CPLUS_TRACE_STR(logger, "Main::Main()");
 
 	signal (SIGINT,  &Main::signalHandler);
@@ -85,6 +86,16 @@ void Main::signalHandler(int sigNum) {
 	LOG4CPLUS_DEBUG_STR(logger, "Main::signalHandler()");
 
 	Main::instance().stop();
+}
+
+char *Main::getCecName() {
+	LOG4CPLUS_TRACE_STR(logger, "Main::getCecName()");
+	if (gethostname(cec_name,HOST_NAME_MAX) < 0 ) {
+		LOG4CPLUS_TRACE_STR(logger, "Main::getCecName()");
+		strncpy(cec_name, CEC_NAME, sizeof(HOST_NAME_MAX));
+	}
+
+	return cec_name;
 }
 
 const std::vector<__u16> & Main::setupUinputMap() {

@@ -1,5 +1,6 @@
 #include "uinput.h"
 #include "libcec.h"
+#include <limits.h>
 
 class Main : public CecCallback {
 
@@ -7,6 +8,7 @@ class Main : public CecCallback {
 
 		Cec cec;
 		UInput uinput;
+		char cec_name[HOST_NAME_MAX];
 
 		bool running; // TODO Change this to be threadsafe!. Voiatile or better
 
@@ -20,6 +22,8 @@ class Main : public CecCallback {
 		static void signalHandler(int sigNum);
 
 		static const std::vector<__u16> & setupUinputMap();
+		
+		char *getCecName();
 
 	public:
 
