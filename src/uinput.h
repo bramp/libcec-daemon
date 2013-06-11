@@ -2,6 +2,10 @@
 
 #include <vector>
 
+#define EV_KEY_RELEASED 0
+#define EV_KEY_PRESSED  1
+#define EV_KEY_REPEAT   2
+
 class UInput {
 private:
 	int fd; // Handle for uinput file ops
