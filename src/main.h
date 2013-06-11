@@ -6,12 +6,18 @@ class Main : public CecCallback {
 
 	private:
 
+		// Main controls
 		Cec cec;
 		UInput uinput;
 		char cec_name[HOST_NAME_MAX];
 
+		// Some config params
+		bool makeActive;
+
+		//
 		bool running; // TODO Change this to be threadsafe!. Voiatile or better
 
+		//
 		Main();
 		virtual ~Main();
 
@@ -41,4 +47,5 @@ class Main : public CecCallback {
 
 		void listDevices();
 
+		void setMakeActive(bool active) {this->makeActive = active;};
 };

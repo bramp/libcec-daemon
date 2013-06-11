@@ -49,7 +49,7 @@ Main & Main::instance() {
 	return main;
 }
 
-Main::Main() : cec(getCecName(), this), uinput(UINPUT_NAME, uinputCecMap), running(true) {
+Main::Main() : cec(getCecName(), this), uinput(UINPUT_NAME, uinputCecMap), makeActive(true), running(true) {
 	LOG4CPLUS_TRACE_STR(logger, "Main::Main()");
 
 	signal (SIGINT,  &Main::signalHandler);
@@ -65,6 +65,11 @@ void Main::loop() {
 	LOG4CPLUS_TRACE_STR(logger, "Main::loop()");
 
 	cec.open();
+
+	if (makeActive) {
+		cec.makeActive();
+	}
+
 	while (running) {
 		LOG4CPLUS_TRACE_STR(logger, "Loop");
 		sleep(1);
@@ -244,6 +249,7 @@ int main (int argc, char *argv[]) {
 	    ("list,l",    "list available CEC adapters and devices")
 	    ("verbose,v", accumulator<int>(&loglevel)->implicit_value(1), "verbose output (use -vv for more)")
 	    ("quiet,q",   "quiet output (print almost nothing)")
+	    ("donotactivate,a", "do not activate device on startup")
 	    ("usb", po::value<std::string>(), "USB adapter path (as shown by --list)")
 	;
 
@@ -255,7 +261,7 @@ int main (int argc, char *argv[]) {
 	po::notify(vm);
 
 	if (vm.count("help")) {
-		cout << "Usage: " << argv[0] << " [-h] [-v] [-d] [usb]" << endl << endl;
+		cout << "Usage: " << argv[0] << " [options] [usb]" << endl << endl;
 	    cout << desc << endl;
 	    return 0;
 	}
@@ -282,6 +288,10 @@ int main (int argc, char *argv[]) {
 	try {
 		// Create the main
 		Main & main = Main::instance();
+
+		if (vm.count("donotactivate")) {
+			main.setMakeActive(false);
+		}
 
 		if (vm.count("list")) {
 			main.listDevices();

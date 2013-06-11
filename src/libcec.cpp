@@ -158,17 +158,21 @@ void Cec::open() {
 	}
 
 	LOG4CPLUS_INFO(logger, "Opened " << devices[0].path);
-
-	// and made active
-	if (!cec->SetActiveSource(config.deviceTypes[0])) {
-		throw std::runtime_error("Failed to become active");
-	}
 }
 
 void Cec::close() {
 	cec->SetInactiveView();
 	cec->Close();
 }
+
+void Cec::makeActive() {
+	// and made active
+	if (!cec->SetActiveSource(config.deviceTypes[0])) {
+		throw std::runtime_error("Failed to become active");
+	}
+}
+
+
 
 /**
  * Prints the name of all found adapters

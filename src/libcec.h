@@ -55,6 +55,8 @@ class Cec {
 		 */
 		void close();
 
+		void makeActive();
+
 	// These are just wrapper functions, to map C callbacks to C++
 	friend int cecLogMessage (void *cbParam, const CEC::cec_log_message &message);
 	friend int cecKeyPress   (void *cbParam, const CEC::cec_keypress &key);
