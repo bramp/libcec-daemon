@@ -44,6 +44,9 @@ static Logger logger = Logger::getInstance("libcec");
 // Map of control codes to Strings
 const map<enum cec_user_control_code, const char *> Cec::cecUserControlCodeName = Cec::setupUserControlCodeName();
 
+// We store a global handle, so we can use g_cec->ToString(..) in certain cases. This is a bit of a HACK :(
+ICECAdapter * g_cec = NULL;
+
 int cecLogMessage(void *cbParam, const cec_log_message message) {
 	try {
 		return ((CecCallback*) cbParam)->onCecLogMessage(message);
@@ -76,8 +79,10 @@ struct ICECAdapterDeleter : std::default_delete<ICECAdapter> {
 	//ICECAdapterDeleter() = default;
 
 	void operator()(ICECAdapter* ptr) const {
-		if (ptr)
+		if (ptr) {
 			UnloadLibCec(ptr);
+			g_cec = NULL;
+		}
 	}
 };
 
@@ -121,7 +126,7 @@ ICECAdapter * Cec::CecInit(const char * name, CecCallback * callback) {
 
 	// LibCecInitialise is noisy, so we redirect cout to nowhere
 	RedirectStreamBuffer redirect(cout, 0);
-	return (ICECAdapter *)LibCecInitialise(&config);
+	return g_cec = (ICECAdapter *)LibCecInitialise(&config);
 }
 
 Cec::Cec(const char * name, CecCallback * callback) :
@@ -340,10 +345,25 @@ std::ostream& operator<<(std::ostream &out, const cec_keypress & key) {
 	return out << "Key press: " << key.keycode << " for " << key.duration << "ms";
 }
 
-std::ostream& operator<<(std::ostream &out, const cec_command & command) {
-	throw std::runtime_error("operator<<(std::ostream &out, const cec_command & command)");
+std::ostream& operator<<(std::ostream &out, const cec_command & cmd) {
+//  cec_logical_address initiator;        /**< the logical address of the initiator of this message */
+//  cec_logical_address destination;      /**< the logical address of the destination of this message */
+//  int8_t              ack;              /**< 1 when the ACK bit is set, 0 otherwise */
+//  int8_t              eom;              /**< 1 when the EOM bit is set, 0 otherwise */
+//  cec_opcode          opcode;           /**< the opcode of this message */
+//  cec_datapacket      parameters;       /**< the parameters attached to this message */
+//  int8_t              opcode_set;       /**< 1 when an opcode is set, 0 otherwise (POLL message) */
+//  int32_t             transmit_timeout; /**< the timeout to use in ms */
+
+	return out << "Command " << cmd.initiator << " to " << cmd.destination << " " << cmd.opcode;
+}
+
+std::ostream& operator<<(std::ostream &out, const cec_opcode & opcode) {
+	if (g_cec)
+		return out << g_cec->ToString(opcode);
+	return out << "UNKNOWN";
 }
 
 std::ostream& operator<<(std::ostream &out, const libcec_configuration & configuration) {
-	throw std::runtime_error("operator<<(std::ostream &out, const libcec_configuration & configuration)");
+	throw std::runtime_error("unsupported operator<<(std::ostream &out, const libcec_configuration & configuration)");
 }
