@@ -57,6 +57,8 @@ class Cec {
 
 		void makeActive();
 
+		bool transmit(const CEC::cec_command &cmd);
+
 	// These are just wrapper functions, to map C callbacks to C++
 	friend int cecLogMessage (void *cbParam, const CEC::cec_log_message &message);
 	friend int cecKeyPress   (void *cbParam, const CEC::cec_keypress &key);
@@ -64,6 +66,7 @@ class Cec {
 	friend int cecConfigurationChanged (void *cbParam, const CEC::libcec_configuration & configuration);
 };
 
+CEC::cec_command * StrToCecCommand(const char *); 
 
 // Some helper << methods
 std::ostream& operator<<(std::ostream &out, const CEC::cec_log_message & message);

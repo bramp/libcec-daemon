@@ -33,6 +33,7 @@ using std::endl;
 using std::hex;
 using std::map;
 using std::ostream;
+using std::string;
 
 // cecloader has to be after some #includes and using namespaces :(
 using std::cout;
@@ -162,7 +163,7 @@ void Cec::open() {
 	if (!cec->Open(devices[0].comm)) {
 		throw std::runtime_error("Failed to open adapter");
 	}
-
+	
 	LOG4CPLUS_INFO(logger, "Opened " << devices[0].path);
 }
 
@@ -178,6 +179,10 @@ void Cec::makeActive() {
 	}
 }
 
+
+bool Cec::transmit(const CEC::cec_command &cmd) {
+	return cec->Transmit(cmd);
+}
 
 
 /**
@@ -310,6 +315,18 @@ map<cec_user_control_code, const char *> & Cec::setupUserControlCodeName() {
 	}
 
 	return cecUserControlCodeName;
+}
+
+CEC::cec_command * StrToCecCommand(const char * strCmd) {
+	//take string input xx:xx:xx or yy yy yy and convert to type cec_command
+	CEC::cec_command * cmd = new CEC::cec_command;
+	char * buffer = new char[100];
+	buffer = strdup(strCmd);
+
+	for(char * c = strtok (buffer, ": ");c;c=strtok(NULL,": ")) {
+		cmd->PushBack(strtol(c, NULL, 16));
+	}
+	return cmd;
 }
 
 std::ostream& operator<<(std::ostream &out, const cec_user_control_code code) {
