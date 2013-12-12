@@ -9,7 +9,6 @@
 #include "main.h"
 
 #define VERSION     "libcec-daemon v0.9"
-#define FIFO_FILE    "/dev/cecfifo"
 
 #define CEC_NAME    "linux PC"
 #define UINPUT_NAME "libcec-daemon"
@@ -17,15 +16,11 @@
 #include <algorithm>
 #include <cstdio>
 #include <iostream>
-#include <fstream>
 #include <cstdint>
 #include <cstddef>
 #include <csignal>
 #include <vector>
 #include <unistd.h>
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <sys/types.h>
 
 #include <boost/program_options.hpp>
 #include "accumulator.hpp"
@@ -43,7 +38,6 @@ using std::endl;
 using std::min;
 using std::string;
 using std::vector;
-using std::ios_base;
 
 static Logger logger = Logger::getInstance("main");
 
@@ -76,26 +70,10 @@ void Main::loop() {
 		cec.makeActive();
 	}
 
-	// Notes
-	// 
-	// Transmit 
-	// Error catching
-
-	mkfifo(FIFO_FILE, 0666);
-	chmod(FIFO_FILE, 0666);
-
-	char * strCommand = new char[100];
-
-	int fdfifo = open(FIFO_FILE, O_RDONLY | O_NONBLOCK);
-	FILE *fpfifo = fdopen(fdfifo,"r"); 
-
 	while (running) {
-		while (fgets(strCommand,100,fpfifo) != NULL) {
-			cec.transmit( *(StrToCecCommand(strCommand)) );
-			cout << strCommand << endl;
-		} 
-	}	
-
+		LOG4CPLUS_TRACE_STR(logger, "Loop");
+		sleep(1);
+	}
 	cec.close();
 }
 
