@@ -123,6 +123,7 @@ ICECAdapter * Cec::CecInit(const char * name, CecCallback * callback) {
 	callbacks.CBCecConfigurationChanged = &::cecConfigurationChanged;
 	config.callbackParam                = callback;
 	config.callbacks                    = &callbacks;
+	config.bActivateSource		    = false;
 
 	// LibCecInitialise is noisy, so we redirect cout to nowhere
 	RedirectStreamBuffer redirect(cout, 0);
