@@ -1,0 +1,19 @@
+#!/bin/sh
+
+if which dpkg >/dev/null 2>&1; then
+   check_pkg()
+   {
+       dpkg --compare-versions "`dpkg-query --show --showformat '${Version}' "$1" 2>/dev/null`" ge "$2" || echo "WARNING: $1 is not installed or is not at least version $2"
+   }
+   check_pkg g++ 4
+   check_pkg autoconf 2.69
+   check_pkg automake 1:1.11
+   check_pkg libcec-dev 2.1
+   check_pkg libboost-thread-dev 1.49
+   check_pkg libboost-program-options-dev 1.49
+   check_pkg liblog4cplus-dev 1
+fi
+
+aclocal -I m4
+#libtoolize
+autoreconf -ivf
