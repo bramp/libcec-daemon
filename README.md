@@ -23,12 +23,9 @@ git clone git://github.com/bramp/libcec-daemon.git
 sudo apt-get install libboost-program-options-dev libboost-thread-dev liblog4cplus-dev
 ```
 
-* Also we need the libcec libraries. Pulse eight provides east way to install
+* Also we need the libcec (version 2.x) libraries. Pulse eight provides east way to install
 
 ```
-sudo apt-get install libcec-dev
-
-# Alternatively fetch it directly from pulse-eight
 wget http://packages.pulse-eight.net/ubuntu/install-libcec.sh
 sudo sh install-libcec.sh
 ```
