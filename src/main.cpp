@@ -19,6 +19,7 @@
 #include <cstdint>
 #include <cstddef>
 #include <csignal>
+#include <cstdlib>
 #include <vector>
 #include <unistd.h>
 
