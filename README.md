@@ -28,9 +28,10 @@ sudo apt-get install libboost-program-options-dev libboost-thread-dev libboost-s
 
 ```
 wget http://packages.pulse-eight.net/ubuntu/install-libcec.sh
-sudo sh install-libcec.sh
+sudo bash install-libcec.sh
 ```
 
+* On Ubuntu saucy and above, I had to modify install-libcec.sh. My version is found [here](https://github.com/bramp/libcec-daemon/blob/master/install-libcec.sh).
 * If you have trouble getting libcec, please refer to their documentaiton.
 * Now build the libcec-daemon
 

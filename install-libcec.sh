@@ -25,7 +25,7 @@
 
 PACKAGE_TYPE="stable"
 MIRROR="http://packages.pulse-eight.net/ubuntu"
-SUPPORTED_VERSIONS=(hardy lucid maverick natty oneiric precise quantal raring)
+SUPPORTED_VERSIONS=(hardy lucid maverick natty oneiric precise quantal raring saucy)
 
 if [ ! -f /etc/lsb-release ]; then
   echo "This script only works on an Ubuntu machine"
@@ -89,7 +89,7 @@ echo "Updating repositories"
 sudo apt-get update
 
 echo "Installing/upgrading libCEC"
-sudo apt-get -y install libcec cec-utils cec-firmware-upgrade
+sudo apt-get -y install libcec cec-utils libcec-dev cec-firmware-upgrade
 
 exit $?
 
