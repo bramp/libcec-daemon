@@ -48,7 +48,6 @@ static Logger logger = Logger::getInstance("main");
 static boost::mutex libcec_sync;
 static boost::condition_variable libcec_cond;
 
-//const vector<__u16> Main::uinputCecMap = Main::setupUinputMap();
 const vector<list<__u16>> Main::uinputCecMap = Main::setupUinputMap();
 
 enum
