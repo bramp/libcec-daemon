@@ -26,6 +26,9 @@ sudo apt-get install libboost-program-options-dev libboost-thread-dev liblog4cpl
 * Also we need the libcec libraries. Pulse eight provides east way to install
 
 ```
+sudo apt-get install libcec-dev
+
+# Alternatively fetch it directly from pulse-eight
 wget http://packages.pulse-eight.net/ubuntu/install-libcec.sh
 sudo sh install-libcec.sh
 ```
@@ -35,7 +38,7 @@ sudo sh install-libcec.sh
 
 ```
 cd libcec-daemon
-boostrap && configure && make
+make
 ```
 
 Usage
