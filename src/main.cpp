@@ -7,8 +7,8 @@
  *
  */
 #include "main.h"
-
 #include "config.h"
+#include "hdmi.h"
 
 #define CEC_NAME    "linux PC"
 #define UINPUT_NAME "libcec-daemon"

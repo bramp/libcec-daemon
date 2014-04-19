@@ -6,6 +6,8 @@
 
 #include <cstdio>
 
+namespace HDMI {
+
 std::ostream& operator<<(std::ostream &out, const HDMI::physical_address & address)
 {
     return out << address[0] << '.' << address[1] << '.'
@@ -138,4 +140,6 @@ std::ostream& operator<<(std::ostream &out, const HDMI::address & address)
             out << address.physical;
             break;
     }
+}
+
 }

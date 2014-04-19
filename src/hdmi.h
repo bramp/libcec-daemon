@@ -35,10 +35,12 @@ namespace HDMI
         CEC::cec_logical_address logical;
         uint8_t port;
     };
+
+    std::ostream& operator<<(std::ostream &out, const HDMI::physical_address & address);
+    std::istream& operator>>(std::istream &in, HDMI::physical_address & address);
+
+    std::ostream& operator<<(std::ostream &out, const HDMI::address & address);
+    std::istream& operator>>(std::istream &in, HDMI::address & address);
 };
 
-std::ostream& operator<<(std::ostream &out, const HDMI::physical_address & address);
-std::istream& operator>>(std::istream &in, HDMI::physical_address & address);
 
-std::ostream& operator<<(std::ostream &out, const HDMI::address & address);
-std::istream& operator>>(std::istream &in, HDMI::address & address);

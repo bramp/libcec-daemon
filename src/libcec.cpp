@@ -15,6 +15,7 @@
  *
  */
 #include "libcec.h"
+#include "hdmi.h"
 
 #include <cstdio>
 #include <iostream>
