@@ -15,6 +15,7 @@
  *
  */
 #include "libcec.h"
+#include "hdmi.h"
 
 #include <cstdio>
 #include <iostream>
@@ -438,7 +439,10 @@ std::ostream& operator<<(std::ostream &out, const cec_command & cmd) {
 //  int8_t              opcode_set;       /**< 1 when an opcode is set, 0 otherwise (POLL message) */
 //  int32_t             transmit_timeout; /**< the timeout to use in ms */
 
-	return out << "Command " << cmd.initiator << " to " << cmd.destination << " " << cmd.opcode;
+	return out << "Command "
+			<< cmd.initiator << "->" << cmd.destination
+			<< "[" << (cmd.ack ? "A" : " ") << (cmd.eom ? "A" : " ") << "]"
+			<< " " << cmd.opcode;
 }
 
 std::ostream& operator<<(std::ostream &out, const cec_opcode & opcode) {

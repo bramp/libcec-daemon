@@ -18,7 +18,7 @@ static const char *uinput_filename[] = {"/dev/uinput", "/dev/input/uinput", "/de
 
 static Logger logger = Logger::getInstance("uinput");
 
-UInput::UInput(const char *dev_name, const std::vector<std::list<__u16>> & keys) : fd(-1) {
+UInput::UInput(const char *dev_name, const std::vector< std::list<__u16> > & keys) : fd(-1) {
 	openAll();
 	setup(dev_name, keys);
 	create();
@@ -69,7 +69,7 @@ void UInput::openAll() {
 	}
 }
 
-void UInput::setup(const char *dev_name, const std::vector<std::list<__u16>> & keys) {
+void UInput::setup(const char *dev_name, const std::vector< std::list<__u16> > & keys) {
 
 	int ret;
 	struct uinput_user_dev uidev;
@@ -91,7 +91,7 @@ void UInput::setup(const char *dev_name, const std::vector<std::list<__u16>> & k
 	ret  = ioctl(this->fd, UI_SET_EVBIT, EV_KEY);
 
 	// Add all the keys we might use
-	for (std::vector<std::list<__u16>>::const_iterator i = keys.begin(); i != keys.end(); ++i) {
+	for (std::vector< std::list<__u16> >::const_iterator i = keys.begin(); i != keys.end(); ++i) {
 		const std::list<__u16> & kk = *i;
 		for (std::list<__u16>::const_iterator k = kk.begin(); k != kk.end(); ++k) {
 			__u16 ukey = *k;

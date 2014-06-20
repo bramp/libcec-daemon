@@ -5,7 +5,10 @@
 #include <map>
 #include <string>
 
-#include "hdmi.h"
+namespace HDMI {
+	class physical_address;
+	class address;
+}
 
 class CecCallback {
 	public:

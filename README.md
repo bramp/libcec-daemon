@@ -17,25 +17,27 @@ Build
 git clone git://github.com/bramp/libcec-daemon.git
 ```
 
-* Now we need some libraries
+* Now we need some buildtools and libraries
 
 ```
-sudo apt-get install libboost-program-options-dev libboost-thread-dev liblog4cplus-dev
+sudo apt-get install build-essential autoconf 
+sudo apt-get install libboost-program-options-dev libboost-thread-dev libboost-system-dev liblog4cplus-dev
 ```
 
-* Also we need the libcec libraries. Pulse eight provides east way to install
+* Also we need the libcec (version 2.x) libraries. Pulse eight provides east way to install
 
 ```
 wget http://packages.pulse-eight.net/ubuntu/install-libcec.sh
-sudo sh install-libcec.sh
+sudo bash install-libcec.sh
 ```
 
+* On Ubuntu saucy and above, I had to modify install-libcec.sh. My version is found [here](https://github.com/bramp/libcec-daemon/blob/master/install-libcec.sh).
 * If you have trouble getting libcec, please refer to their documentaiton.
 * Now build the libcec-daemon
 
 ```
 cd libcec-daemon
-boostrap && configure && make
+./bootstrap && ./configure && make
 ```
 
 Usage

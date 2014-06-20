@@ -7,8 +7,8 @@
  *
  */
 #include "main.h"
-
 #include "config.h"
+#include "hdmi.h"
 
 #define CEC_NAME    "linux PC"
 #define UINPUT_NAME "libcec-daemon"
@@ -19,6 +19,7 @@
 #include <cstdint>
 #include <cstddef>
 #include <csignal>
+#include <cstdlib>
 #include <vector>
 #include <unistd.h>
 
@@ -48,7 +49,6 @@ static Logger logger = Logger::getInstance("main");
 static boost::mutex libcec_sync;
 static boost::condition_variable libcec_cond;
 
-//const vector<__u16> Main::uinputCecMap = Main::setupUinputMap();
 const vector<list<__u16>> Main::uinputCecMap = Main::setupUinputMap();
 
 enum

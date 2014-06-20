@@ -26,6 +26,7 @@ AX_CXX_CHECK_LIB([log4cplus], [log4cplus::Logger::getRoot()],, AC_MSG_ERROR("req
 AC_CHECK_HEADERS([boost/program_options.hpp boost/thread/thread.hpp],, AC_MSG_ERROR("required boost headers are either missing or incomplete"))
 AX_CXX_CHECK_LIB([boost_program_options], [boost::program_options::positional_options_description],, AC_MSG_ERROR("required library boost is either missing or incomplete"))
 AX_CXX_CHECK_LIB([boost_thread], [boost::thread],, AC_MSG_ERROR("required library boost is either missing or incomplete"))
+AX_CXX_CHECK_LIB([boost_system], [main],, AC_MSG_ERROR("required library boost is either missing or incomplete"))
 AC_CACHE_CHECK([whether boost::program_options::typed_value<> supports value_name() member.],
     [my_cv_boost_po_typed_value_name],
     AC_TRY_COMPILE(["#include <boost/program_options.hpp>"],
