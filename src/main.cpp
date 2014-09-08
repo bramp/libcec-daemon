@@ -162,9 +162,22 @@ void Main::loop(const string & device) {
 				}
 				commands.pop();
 			}
+			int retriesRemaining = 3;
 			while( running && !libcec_cond.timed_wait(libcec_lock, boost::posix_time::seconds(43)) )
 			{
-				running = cec.ping();
+				// Since libcec's CAdapterPingThread::Process() tries pinging 3 times before raising a
+				// connection lost alert, lets also make 3 attempts otherwise we'll stop running
+				// before our alert handling gets a chance to do its job
+				bool pinged = false;
+				if( retriesRemaining > 0 && !(pinged = cec.ping()) )
+				{
+					--retriesRemaining;
+					boost::this_thread::sleep(boost::posix_time::milliseconds(CEC_DEFAULT_TRANSMIT_RETRY_WAIT));
+				}
+				else
+				{
+					running = pinged;
+				}
 			}
 		}
 		while( running );

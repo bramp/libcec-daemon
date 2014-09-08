@@ -1,3 +1,6 @@
+# automake related
+.dirstamp
+
 # Compiled Object files
 *.slo
 *.lo
