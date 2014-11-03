@@ -411,7 +411,7 @@ int Main::onCecKeyPress(const cec_keypress &key) {
 }
 
 int Main::onCecKeyPress(const cec_user_control_code & keycode) {
-	cec_keypress key = { .keycode=keycode };
+	cec_keypress key = { key.keycode=keycode };
 
 	/* PUSH KEY */
 	key.duration = 0;
