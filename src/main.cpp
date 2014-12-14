@@ -462,6 +462,12 @@ int Main::onCecCommand(const cec_command & command) {
 				if( command.parameters[0] == CEC_DECK_CONTROL_MODE_STOP ) {
 					push(Command(COMMAND_KEYPRESS, CEC_USER_CONTROL_CODE_STOP));
 				}
+				else if( command.parameters[0] == CEC_DECK_CONTROL_MODE_SKIP_FORWARD_WIND ) {
+					push(Command(COMMAND_KEYPRESS, CEC_USER_CONTROL_CODE_FAST_FORWARD));
+				}
+				else if( command.parameters[0] == CEC_DECK_CONTROL_MODE_SKIP_REVERSE_REWIND ) {
+					push(Command(COMMAND_KEYPRESS, CEC_USER_CONTROL_CODE_REWIND));
+				}
 			}
 			break;
 		case CEC_OPCODE_PLAY:
