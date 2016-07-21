@@ -138,22 +138,8 @@ Cec::Cec(const char * name, CecCallback * callback)
 
 	config.Clear();
 
-	config.clientVersion = CEC_CLIENT_VERSION_CURRENT;
-
 	strncpy(config.strDeviceName, name, sizeof(config.strDeviceName));
 	config.deviceTypes.Add(CEC_DEVICE_TYPE_RECORDING_DEVICE);
-	config.bAutodetectAddress = CEC_DEFAULT_SETTING_AUTODETECT_ADDRESS;
-	config.iPhysicalAddress = CEC_INVALID_PHYSICAL_ADDRESS;
-	config.baseDevice = CECDEVICE_UNKNOWN;
-	config.iHDMIPort = CEC_HDMI_PORTNUMBER_NONE;
-	config.bUseTVMenuLanguage = 0;
-	config.bActivateSource = 0;
-	config.bPowerOffScreensaver = 0;
-	config.bPowerOnScreensaver = 0;
-	config.bSendInactiveSource = 0;
-	config.bPowerOffOnStandby = 0;
-	config.bShutdownOnStandby = 0;
-	config.iDoubleTapTimeoutMs = 0;
 
 	callbacks.CBCecLogMessage           = &::cecLogMessage;
 	callbacks.CBCecKeyPress             = &::cecKeyPress;
@@ -162,6 +148,7 @@ Cec::Cec(const char * name, CecCallback * callback)
 	callbacks.CBCecAlert                = &::cecAlert;
 	callbacks.CBCecMenuStateChanged     = &::cecMenuStateChanged;
 	callbacks.CBCecSourceActivated      = &::cecSourceActivated;
+
 	config.callbackParam                = callback;
 	config.callbacks                    = &callbacks;
 }
