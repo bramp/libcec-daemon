@@ -72,7 +72,6 @@ Main::Main() : cec(getCecName(), this), uinput(UINPUT_NAME, uinputCecMap),
 	makeActive(true), running(false), lastUInputKeys({ }), logicalAddress(CECDEVICE_UNKNOWN)
 {
 	LOG4CPLUS_TRACE_STR(logger, "Main::Main()");
-
 }
 
 Main::~Main() {
@@ -218,7 +217,7 @@ void Main::signalHandler(int sigNum) {
 
 char *Main::getCecName() {
 	LOG4CPLUS_TRACE_STR(logger, "Main::getCecName()");
-	if (gethostname(cec_name,HOST_NAME_MAX) < 0 ) {
+	if (gethostname(cec_name, HOST_NAME_MAX) < 0 ) {
 		LOG4CPLUS_TRACE_STR(logger, "Main::getCecName()");
 		strncpy(cec_name, CEC_NAME, sizeof(HOST_NAME_MAX));
 	}
@@ -519,14 +518,7 @@ void Main::onCecSourceActivated(const cec_logical_address & address, bool bActiv
 	LOG4CPLUS_DEBUG(logger, "Main::onCecSourceActivated(logicalAddress " << address << " = " << bActivated << ")");
 	if( logicalAddress == address )
 	{
-		if( bActivated )
-		{
-			push(Command(COMMAND_ACTIVE));
-		}
-		else
-		{	
-			push(Command(COMMAND_INACTIVE));
-		}
+		push(Command(bActivated ? COMMAND_ACTIVE : COMMAND_INACTIVE));
 	}
 }
 
@@ -577,6 +569,7 @@ int main (int argc, char *argv[]) {
 	    ("verbose,v", accumulator<int>(&loglevel)->implicit_value(1), "verbose output (use -vv for more)")
 	    ("quiet,q",   "quiet output (print almost nothing)")
 	    ("donotactivate,a", "do not activate device on startup")
+
 	    ("onstandby", value<string>()->value_name("<path>"),  "command to run on standby")
 	    ("onactivate", value<string>()->value_name("<path>"),  "command to run on activation")
 	    ("ondeactivate", value<string>()->value_name("<path>"),  "command to run on deactivation")

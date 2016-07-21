@@ -30,7 +30,7 @@ class Main : public CecCallback {
 
 		// Some config params
 		bool makeActive;
-		bool running;
+		bool running; // TODO Change this to be threadsafe!. Voiatile or better
 
 		//
 		std::list<__u16> lastUInputKeys; // for key(s) repetition
@@ -80,6 +80,7 @@ class Main : public CecCallback {
 		void listDevices();
 
 		void setMakeActive(bool active) {this->makeActive = active;};
+
 		void setOnStandbyCommand(const std::string &cmd) {this->onStandbyCommand = cmd;};
 		void setOnActivateCommand(const std::string &cmd) {this->onActivateCommand = cmd;};
 		void setOnDeactivateCommand(const std::string &cmd) {this->onDeactivateCommand = cmd;};
