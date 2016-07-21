@@ -24,16 +24,17 @@ sudo apt-get install build-essential autoconf
 sudo apt-get install libboost-program-options-dev libboost-thread-dev libboost-system-dev liblog4cplus-dev
 ```
 
-* Also we need the libcec (version 2.x) libraries. Pulse eight provides east way to install
+* Also we need the libcec (version 3.x) libraries. Pulse eight provides east way to install
 
 ```
+apt-get install libcec-dev libcec-platform-dev
+
+# or manually build them:
 wget http://packages.pulse-eight.net/ubuntu/install-libcec.sh
 sudo bash install-libcec.sh
 ```
 
-* On Ubuntu saucy and above, I had to modify install-libcec.sh. My version is found [here](https://github.com/bramp/libcec-daemon/blob/master/install-libcec.sh).
-* If you have trouble getting libcec, please refer to their documentaiton.
-* Now build the libcec-daemon
+* Now build libcec-daemon
 
 ```
 cd libcec-daemon
