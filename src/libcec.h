@@ -69,11 +69,11 @@ class Cec {
 		bool ping();
 
 	// These are just wrapper functions, to map C callbacks to C++
-	friend int cecLogMessage (void *cbParam, const CEC::cec_log_message &message);
-	friend int cecKeyPress   (void *cbParam, const CEC::cec_keypress &key);
-	friend int cecCommand    (void *cbParam, const CEC::cec_command &command);
-	friend int cecConfigurationChanged (void *cbParam, const CEC::libcec_configuration & configuration);
-	friend int cecAlert(void *cbParam, const CEC::libcec_alert alert, const CEC::libcec_parameter & param);
+	friend void cecLogMessage (void *cbParam, const CEC::cec_log_message &message);
+	friend void cecKeyPress   (void *cbParam, const CEC::cec_keypress &key);
+	friend void cecCommand    (void *cbParam, const CEC::cec_command &command);
+	friend void cecConfigurationChanged (void *cbParam, const CEC::libcec_configuration & configuration);
+	friend void cecAlert(void *cbParam, const CEC::libcec_alert alert, const CEC::libcec_parameter & param);
 	friend int cecMenuStateChanged(void *cbParam, const CEC::cec_menu_state & menu_state);
 	friend void cecSourceActivated(void *cbParam, const CEC::cec_logical_address & address, const uint8_t bActivated);
 };
