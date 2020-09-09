@@ -16,7 +16,7 @@ AX_CXX_COMPILE_STDCXX_11(,[mandatory])
 AC_CHECK_LIB([dl], [dlopen])
 #
 #AC_CHECK_LIB(cec, cec_initialize)
-PKG_CHECK_MODULES([LIBCEC], [libcec >= 2.1], [LIBS="${LIBCEC_LIBS} ${LIBS}"], AC_MSG_ERROR("required package libcec is missing"))
+PKG_CHECK_MODULES([LIBCEC], [libcec >= 4.0], [LIBS="${LIBCEC_LIBS} ${LIBS}"], AC_MSG_ERROR("required package libcec is missing"))
 #
 AC_LANG_PUSH([C++])
 #
