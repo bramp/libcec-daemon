@@ -24,7 +24,8 @@ sudo apt-get install build-essential autoconf
 sudo apt-get install libboost-program-options-dev libboost-thread-dev libboost-system-dev liblog4cplus-dev
 ```
 
-* Also we need the libcec (version 3.x) libraries. Pulse eight provides east way to install
+* Also we need the libcec (version 4.x) libraries. Pulse eight
+  provides an easy way to install
 
 ```
 apt-get install libcec-dev libcec-platform-dev
